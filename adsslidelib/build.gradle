@@ -1,0 +1,71 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = 'com.github.luv135'
+
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "26.0.0"
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.github.bumptech.glide:glide:4.0.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0'
+
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    testCompile 'junit:junit:4.12'
+//    compile project(':commlib')
+//    compile project(':baselibrary')
+    compile 'com.github.luv135:CommonLib:-SNAPSHOT'
+
+}
+
+repositories {
+    mavenCentral()
+}
+//e4e784cd2c9abc51978151d6a14f1d5422fdbdd8
+
+task publishRelease(dependsOn: 'assembleRelease') << {
+    def today = new Date().format('yyyyMMdd');
+    def id = android.defaultConfig.applicationId
+//    def prex = id.substring(id.lastIndexOf(".") + 1)
+    /* copy {
+         from('build/outputs/aar/')
+         into('../release/')
+         include('*release.aar')
+         rename('-', "-$android.defaultConfig.versionName-$today-")
+     }*/
+    copy {
+        from('build/outputs/aar/')
+        into('../release/')
+        include('*release.aar')
+    }
+}
