@@ -16,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 
 import com.unistrong.luowei.adsslidelib.R
+import com.unistrong.luowei.commlib.Log
 
 
 /**
@@ -49,6 +50,10 @@ class VideoFragment : Fragment(), ISlide.SlideItem {
         initVideoResource()
         //        if(DEBUG)Logger.getLogger().d("onCreateView" + position);
         return view
+    }
+
+    fun getBitmap(): Bitmap? {
+        return textureView.bitmap
     }
 
     fun getVideoThumbnail(filePath: String): Bitmap? {
@@ -150,28 +155,34 @@ class VideoFragment : Fragment(), ISlide.SlideItem {
 
     private fun initVideoResource() {
         try {
+            Log.d("load video $videoPath")
             mediaPlayer!!.setDataSource(videoPath)
             mediaPlayer!!.setAudioStreamType(AudioManager.STREAM_MUSIC)
             mediaPlayer!!.prepareAsync()
             mediaPlayer!!.setOnPreparedListener {
                 videoStatus = videoStatus or VIDEO_DATA_LOADED
                 try2PlayVideo()
+                Log.d("on prepared")
             }
             mediaPlayer!!.setOnCompletionListener {
                 if (!slideNext()) { //请求滑动到下一页失败,则尝试再次播放视频
                     try2PlayVideo()
+                } else{
+                    Log.d("slide to next ok")
                 }
+                Log.d("completion")
             }
             mediaPlayer!!.setOnErrorListener { mp, what, extra ->
                 if (!slideNext()) { //请求滑动到下一页失败,则尝试再次播放视频
                     try2PlayVideo()
                 }
+                Log.e("on error: mp=$mp, what=$what, extra=$extra")
                 true
             }
 
 
         } catch (e: Exception) {
-            //            e.printStackTrace();
+                        e.printStackTrace();
             videoStatus = videoStatus or VIDEO_ERROR
             //            new Handler().post(new Runnable() {
             //                @Override

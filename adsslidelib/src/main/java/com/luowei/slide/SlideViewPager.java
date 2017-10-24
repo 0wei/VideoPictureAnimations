@@ -10,6 +10,8 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 
 
+import com.unistrong.luowei.commlib.Log;
+
 import java.lang.ref.WeakReference;
 
 /**
@@ -142,10 +144,13 @@ public class SlideViewPager extends ViewPager implements ISlide {
         Fragment item1;// = ((SlideAdapter) getAdapter()).getItem(currentItem); //此处item变化导致不是当前显示的Fragment
 //        if (DEBUG) Logger.getLogger().d("current slide Item : %d. is image : %B", currentItem,item1 instanceof ImageShowFragment);
         item1 = ((SlideAdapter) getAdapter()).getCurrentFragment();
-        if(item1==null)return false;
+        if(item1==null){
+            Log.INSTANCE.e("item is null");
+            return false;}
         ISlide.SlideItem item = (ISlide.SlideItem) item1;
         if (!canSlide) {    //触屏禁止自动滑动
             slideDelay();
+            Log.INSTANCE.e("can't slide ,wait moment");
             return false;
         }
         if (!force) {
@@ -159,6 +164,7 @@ public class SlideViewPager extends ViewPager implements ISlide {
                 replayListener.replay();
             }
         }
+        Log.INSTANCE.e("setCurrentItem="+currentItem);
         currentItem = currentItem >= count ? 0 : currentItem;
         setCurrentItem(currentItem);
         return true;
