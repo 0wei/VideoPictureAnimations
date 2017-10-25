@@ -7,6 +7,8 @@ import android.support.v4.view.ViewPager;
 import android.view.ViewGroup;
 
 
+import com.unistrong.luowei.commlib.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -30,14 +32,6 @@ public class SlideAdapter extends FragmentStatePagerAdapter {
     }
 
     public void addItem(Item item) {
-//        boolean added = false;
-//        for (int i = 0; i < playlist.size(); i++) {
-//            if (playlist.get(i) == null) {
-//                playlist.set(i, item);
-//                added = true;
-//                break;
-//            }
-//        }
         if (playlist.indexOf(item) == -1) {
             playlist.add(item);
             if (DEBUG) {
@@ -134,10 +128,6 @@ public class SlideAdapter extends FragmentStatePagerAdapter {
         }
         int currentItem = ((ViewPager) viewPager).getCurrentItem();
         if (currentItem != -1 && playlist.size() > 0) {
-//            currentItem %= playlist.size();
-            /*
-
-             */
             for (Item item : playlist) {
                 if (item.path.equals(path)) {   //是否已经被删除
                     return POSITION_UNCHANGED;
@@ -145,7 +135,7 @@ public class SlideAdapter extends FragmentStatePagerAdapter {
             }
         }
         return POSITION_NONE;   //已经被删除
-//        return super.getItemPosition(object);
+
     }
 
     @Override
@@ -153,12 +143,13 @@ public class SlideAdapter extends FragmentStatePagerAdapter {
         if (playlist.size() == 0 && defaultItem != null) {
             playlist.add(defaultItem);
         }
-        if (playlist.size() == 2)
+        if (playlist.size() >= 2 && defaultItem != null) {
+            Log.INSTANCE.d("remove default image");
             playlist.remove(defaultItem);
-//        return count;
+            defaultItem = null;
+        }
         int count = playlist.size();
         return count < 2 ? count : Integer.MAX_VALUE;
-//        return count < 2 ? count : count+2;//Integer.MAX_VALUE;
     }
 
 
