@@ -55,6 +55,8 @@ public class SlideViewPager extends ViewPager implements ISlide {
             SlideViewPager slideViewPager = pager.get();
             if (slideViewPager != null) {
                 slideViewPager.slideNext();
+            } else {
+                Log.INSTANCE.w("slide is null");
             }
 
         }
@@ -72,10 +74,10 @@ public class SlideViewPager extends ViewPager implements ISlide {
     }
 
     private void init() {
-        handler = new MyHandler(this);
         addOnPageChangeListener(new SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
+                Log.INSTANCE.d("selected " + position);
                 slideDelay();
             }
 
@@ -97,6 +99,7 @@ public class SlideViewPager extends ViewPager implements ISlide {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         clearSlide();
+        Log.INSTANCE.w("onDetachedFromWindow, set handler = null");
         handler = null;
         replayListener = null;  //// TODO: 2016/10/17 不置为空,会导致创建一个新的该对象此处有应用
     }
@@ -119,10 +122,14 @@ public class SlideViewPager extends ViewPager implements ISlide {
     }
 
     private void slideDelay() {
+        if (handler == null) {
+            handler = new MyHandler(this);
+            Log.INSTANCE.e("handle is null, and create");
+        }
         if (handler != null) {
+            Log.INSTANCE.d("delay to slide");
             handler.removeMessages(0);
             handler.sendEmptyMessageDelayed(0, timeOut);
-        } else {
         }
     }
 
@@ -144,9 +151,10 @@ public class SlideViewPager extends ViewPager implements ISlide {
         Fragment item1;// = ((SlideAdapter) getAdapter()).getItem(currentItem); //此处item变化导致不是当前显示的Fragment
 //        if (DEBUG) Logger.getLogger().d("current slide Item : %d. is image : %B", currentItem,item1 instanceof ImageShowFragment);
         item1 = ((SlideAdapter) getAdapter()).getCurrentFragment();
-        if(item1==null){
+        if (item1 == null) {
             Log.INSTANCE.e("item is null");
-            return false;}
+            return false;
+        }
         ISlide.SlideItem item = (ISlide.SlideItem) item1;
         if (!canSlide) {    //触屏禁止自动滑动
             slideDelay();
@@ -164,8 +172,8 @@ public class SlideViewPager extends ViewPager implements ISlide {
                 replayListener.replay();
             }
         }
-        Log.INSTANCE.e("setCurrentItem="+currentItem);
         currentItem = currentItem >= count ? 0 : currentItem;
+        Log.INSTANCE.d("setCurrentItem=" + currentItem);
         setCurrentItem(currentItem);
         return true;
     }
@@ -175,7 +183,7 @@ public class SlideViewPager extends ViewPager implements ISlide {
      */
     public void setTimeout(int timeMillis) {
         this.timeOut = timeMillis;
-        if(handler!=null) {
+        if (handler != null) {
             handler.removeMessages(0);
             handler.sendEmptyMessageDelayed(0, timeMillis);
         }
