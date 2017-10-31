@@ -20,13 +20,13 @@ import java.lang.ref.WeakReference;
 public class SlideViewPager extends ViewPager implements ISlide {
 
     private static final boolean DEBUG = false;
-    private Handler handler;
+    private MyHandler handler;
     private int timeOut = 5000;
     //    private int timeOut = 500;
     private boolean canSlide = true;
     private boolean isAutoSlideRun;  //当前是否需要重新启动滑动
     private PlayListener replayListener;
-
+    
     @Override
     public boolean requestSlideNext() {
         clearSlide();
@@ -43,7 +43,7 @@ public class SlideViewPager extends ViewPager implements ISlide {
     }
 
 
-    static class MyHandler extends Handler {
+    private static class MyHandler extends Handler {
         WeakReference<SlideViewPager> pager;
 
         MyHandler(SlideViewPager pager) {
@@ -54,9 +54,10 @@ public class SlideViewPager extends ViewPager implements ISlide {
         public void handleMessage(Message msg) {
             SlideViewPager slideViewPager = pager.get();
             if (slideViewPager != null) {
+                if(DEBUG)Log.INSTANCE.w("slideNext ");
                 slideViewPager.slideNext();
             } else {
-                Log.INSTANCE.w("slide is null");
+                if(DEBUG)Log.INSTANCE.w("slide is null");
             }
 
         }
@@ -77,7 +78,7 @@ public class SlideViewPager extends ViewPager implements ISlide {
         addOnPageChangeListener(new SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                Log.INSTANCE.d("selected " + position);
+                if(DEBUG)Log.INSTANCE.d("selected " + position);
                 slideDelay();
             }
 
@@ -99,7 +100,7 @@ public class SlideViewPager extends ViewPager implements ISlide {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         clearSlide();
-        Log.INSTANCE.w("onDetachedFromWindow, set handler = null");
+        if(DEBUG)Log.INSTANCE.w("onDetachedFromWindow, set handler = null");
         handler = null;
         replayListener = null;  //// TODO: 2016/10/17 不置为空,会导致创建一个新的该对象此处有应用
     }
@@ -124,13 +125,11 @@ public class SlideViewPager extends ViewPager implements ISlide {
     private void slideDelay() {
         if (handler == null) {
             handler = new MyHandler(this);
-            Log.INSTANCE.e("handle is null, and create");
+            if(DEBUG)Log.INSTANCE.e("handle is null, and create");
         }
-        if (handler != null) {
-            Log.INSTANCE.d("delay to slide");
-            handler.removeMessages(0);
-            handler.sendEmptyMessageDelayed(0, timeOut);
-        }
+        handler.removeMessages(0);
+        handler.sendEmptyMessageDelayed(0, timeOut);
+
     }
 
     private void slideNext() {
@@ -144,6 +143,7 @@ public class SlideViewPager extends ViewPager implements ISlide {
             if (replayListener != null) {
                 replayListener.replay();
             }
+            if(DEBUG)Log.INSTANCE.e("count < 2");
             return false;
         }
         int currentItem = getCurrentItem();
@@ -152,13 +152,13 @@ public class SlideViewPager extends ViewPager implements ISlide {
 //        if (DEBUG) Logger.getLogger().d("current slide Item : %d. is image : %B", currentItem,item1 instanceof ImageShowFragment);
         item1 = ((SlideAdapter) getAdapter()).getCurrentFragment();
         if (item1 == null) {
-            Log.INSTANCE.e("item is null");
+            if(DEBUG)Log.INSTANCE.e("item is null");
             return false;
         }
         ISlide.SlideItem item = (ISlide.SlideItem) item1;
         if (!canSlide) {    //触屏禁止自动滑动
             slideDelay();
-            Log.INSTANCE.e("can't slide ,wait moment");
+            if(DEBUG)Log.INSTANCE.e("can't slide ,wait moment");
             return false;
         }
         if (!force) {
@@ -173,7 +173,7 @@ public class SlideViewPager extends ViewPager implements ISlide {
             }
         }
         currentItem = currentItem >= count ? 0 : currentItem;
-        Log.INSTANCE.d("setCurrentItem=" + currentItem);
+        if(DEBUG)Log.INSTANCE.d("slideNext to " + currentItem);
         setCurrentItem(currentItem);
         return true;
     }

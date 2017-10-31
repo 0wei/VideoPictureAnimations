@@ -54,4 +54,8 @@ class Advertisement : FrameLayout {
         viewPager.adapter = adapter
         adapter.setDefault(SlideAdapter.Item(SlideAdapter.ItemType.Image, DEFAULT_IMAGE))
     }
+
+    fun setDefaultImageFile(path: String) {
+        adapter.setDefault(SlideAdapter.Item(SlideAdapter.ItemType.Image, path))
+    }
 }

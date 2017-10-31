@@ -6,12 +6,12 @@ group = 'com.github.luv135'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "26.0.0"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0.0"
 
@@ -43,8 +43,8 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
 //    compile project(':commlib')
-//    compile project(':baselibrary')
-    compile 'com.github.luv135:CommonLib:-SNAPSHOT'
+    compile project(':ThirdOpenSource/CommonLib:commlib')
+//    compile 'com.github.luv135:CommonLib:-SNAPSHOT'
 
 }
 

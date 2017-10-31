@@ -36,7 +36,7 @@ class VideoFragment : Fragment(), ISlide.SlideItem {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater!!.inflate(R.layout.slide_fragment_slide_video, container, false)
-        textureView = view.findViewById(R.id.ads_slide_video_textureView) as TextureView
+        textureView = view.findViewById(R.id.ads_slide_video_textureView)
         mediaPlayer = MediaPlayer()
 
         val arguments = arguments
@@ -155,28 +155,30 @@ class VideoFragment : Fragment(), ISlide.SlideItem {
 
     private fun initVideoResource() {
         try {
-            Log.d("load video $videoPath")
+            Log.d("load video $videoPath, ${this}")
             mediaPlayer!!.setDataSource(videoPath)
             mediaPlayer!!.setAudioStreamType(AudioManager.STREAM_MUSIC)
             mediaPlayer!!.prepareAsync()
             mediaPlayer!!.setOnPreparedListener {
                 videoStatus = videoStatus or VIDEO_DATA_LOADED
-                try2PlayVideo()
                 Log.d("on prepared")
+                try2PlayVideo()
+
             }
             mediaPlayer!!.setOnCompletionListener {
+                Log.d("completion")
                 if (!slideNext()) { //请求滑动到下一页失败,则尝试再次播放视频
                     try2PlayVideo()
                 } else{
                     Log.d("slide to next ok")
                 }
-                Log.d("completion")
             }
             mediaPlayer!!.setOnErrorListener { mp, what, extra ->
+                Log.e("on error: mp=$mp, what=$what, extra=$extra")
                 if (!slideNext()) { //请求滑动到下一页失败,则尝试再次播放视频
                     try2PlayVideo()
                 }
-                Log.e("on error: mp=$mp, what=$what, extra=$extra")
+
                 true
             }
 
