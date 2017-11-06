@@ -6,8 +6,11 @@
     android:layout_height="match_parent"
     tools:context="com.unistrong.luowei.demo.MainActivity">
 
+    <!--<com.luowei.slide.Roll3DContainer-->
+
     <com.luowei.slide.Advertisement
-        android:id="@+id/slide_advertisement"
+
+        android:id="@+id/advertisement"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Hello World!"
@@ -15,5 +18,32 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <SeekBar
+            android:id="@+id/roteSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="360" />
+
+        <SeekBar
+            android:id="@+id/posDySeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="720" />      <SeekBar
+            android:id="@+id/cameraY"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="720" />
+    </LinearLayout>
+
 
 </android.support.constraint.ConstraintLayout>

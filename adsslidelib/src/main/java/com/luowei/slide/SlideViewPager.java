@@ -20,13 +20,13 @@ import java.lang.ref.WeakReference;
 public class SlideViewPager extends ViewPager implements ISlide {
 
     private static final boolean DEBUG = false;
-    private MyHandler handler;
+    private Handler handler;
     private int timeOut = 5000;
     //    private int timeOut = 500;
     private boolean canSlide = true;
     private boolean isAutoSlideRun;  //当前是否需要重新启动滑动
     private PlayListener replayListener;
-    
+
     @Override
     public boolean requestSlideNext() {
         clearSlide();
@@ -43,7 +43,7 @@ public class SlideViewPager extends ViewPager implements ISlide {
     }
 
 
-    private static class MyHandler extends Handler {
+    static class MyHandler extends Handler {
         WeakReference<SlideViewPager> pager;
 
         MyHandler(SlideViewPager pager) {
@@ -54,7 +54,6 @@ public class SlideViewPager extends ViewPager implements ISlide {
         public void handleMessage(Message msg) {
             SlideViewPager slideViewPager = pager.get();
             if (slideViewPager != null) {
-                if(DEBUG)Log.INSTANCE.w("slideNext ");
                 slideViewPager.slideNext();
             } else {
                 if(DEBUG)Log.INSTANCE.w("slide is null");
@@ -127,9 +126,11 @@ public class SlideViewPager extends ViewPager implements ISlide {
             handler = new MyHandler(this);
             if(DEBUG)Log.INSTANCE.e("handle is null, and create");
         }
-        handler.removeMessages(0);
-        handler.sendEmptyMessageDelayed(0, timeOut);
-
+        if (handler != null) {
+            if(DEBUG)Log.INSTANCE.d("delay to slide");
+            handler.removeMessages(0);
+            handler.sendEmptyMessageDelayed(0, timeOut);
+        }
     }
 
     private void slideNext() {
@@ -143,12 +144,11 @@ public class SlideViewPager extends ViewPager implements ISlide {
             if (replayListener != null) {
                 replayListener.replay();
             }
-            if(DEBUG)Log.INSTANCE.e("count < 2");
             return false;
         }
         int currentItem = getCurrentItem();
         //// TODO: 2016/10/14 此处被删除导致类型和显示的对不上,需要获取到当前界面显示的fragment
-        Fragment item1;// = ((SlideAdapter) getAdapter()).getItem(currentItem); //此处item变化导致不是当前显示的Fragment
+        Fragment item1;// = ((SlideAdapter) getAdapter()).etItem(currentItem); //此处item变化导致不是当前显示的Fragment
 //        if (DEBUG) Logger.getLogger().d("current slide Item : %d. is image : %B", currentItem,item1 instanceof ImageShowFragment);
         item1 = ((SlideAdapter) getAdapter()).getCurrentFragment();
         if (item1 == null) {
@@ -163,9 +163,11 @@ public class SlideViewPager extends ViewPager implements ISlide {
         }
         if (!force) {
             if ((!item.canSlide())) {
+                slideDelay();
                 return false;
             }
         }
+
         currentItem = currentItem + 1;
         if (currentItem >= ((SlideAdapter) getAdapter()).getPlaylist().size()) {
             if (replayListener != null) {
@@ -173,7 +175,7 @@ public class SlideViewPager extends ViewPager implements ISlide {
             }
         }
         currentItem = currentItem >= count ? 0 : currentItem;
-        if(DEBUG)Log.INSTANCE.d("slideNext to " + currentItem);
+        if(DEBUG)Log.INSTANCE.d("setCurrentItem=" + currentItem);
         setCurrentItem(currentItem);
         return true;
     }
