@@ -6,6 +6,7 @@ import android.animation.AnimatorListenerAdapter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +24,7 @@ class ImageShowFragment : Fragment(), ISlide.SlideItem {
     private lateinit var imageView: Roll3DContainer
     private lateinit var images: Array<out String>
 
+
     private var imageIndex = 0
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
@@ -31,8 +33,8 @@ class ImageShowFragment : Fragment(), ISlide.SlideItem {
         imageView = view.findViewById<Roll3DContainer>(R.id.ads_image_imageView_slide)
         imageView.listener = object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
-                if(DEBUG)Log.d("imageIndex=${imageIndex - 1}, ${this@ImageShowFragment}")
-                viewPager?.setCurrentItem(viewPager!!.currentItem + 1, false)
+                if (DEBUG) Log.d("imageIndex=${imageIndex - 1}, ${this@ImageShowFragment}")
+                Handler().post { viewPager?.setCurrentItem(viewPager!!.currentItem + 1, false) }
             }
         }
         imagePath = arguments.getString(PATH)
@@ -47,21 +49,16 @@ class ImageShowFragment : Fragment(), ISlide.SlideItem {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        imageView.currentBitmap = BitmapFactory.decodeFile(images[imageIndex++])
+        imageView.currentBitmap = BitmapFactory.decodeFile(images[imageIndex])
     }
-
-
-    fun setItem(position: Int) {
-        this.position = position
-    }
-
 
     override fun canSlide(): Boolean {
-        if(DEBUG)Log.d("imageIndex=$imageIndex, $this")
+        if (DEBUG) Log.d("imageIndex=$imageIndex, $this")
+        imageIndex++
         if (imageIndex >= images.size) {
             return true
         }
-        imageView.nextBitmap = BitmapFactory.decodeFile(images[imageIndex++])
+        imageView.nextBitmap = BitmapFactory.decodeFile(images[imageIndex])
         return false
     }
 
@@ -69,7 +66,7 @@ class ImageShowFragment : Fragment(), ISlide.SlideItem {
 
     override fun setSlide(slide: ISlide) {
         viewPager = slide as SlideViewPager
-        if(DEBUG)Log.d("currentItem=${viewPager!!.currentItem}, $this")
+        if (DEBUG) Log.d("currentItem=${viewPager!!.currentItem}, $this")
     }
 
     override fun onDestroyView() {
