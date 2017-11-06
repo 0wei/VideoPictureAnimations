@@ -56,7 +56,7 @@ public class SlideViewPager extends ViewPager implements ISlide {
             if (slideViewPager != null) {
                 slideViewPager.slideNext();
             } else {
-                Log.INSTANCE.w("slide is null");
+                if(DEBUG)Log.INSTANCE.w("slide is null");
             }
 
         }
@@ -77,7 +77,7 @@ public class SlideViewPager extends ViewPager implements ISlide {
         addOnPageChangeListener(new SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                Log.INSTANCE.d("selected " + position);
+                if(DEBUG)Log.INSTANCE.d("selected " + position);
                 slideDelay();
             }
 
@@ -99,7 +99,7 @@ public class SlideViewPager extends ViewPager implements ISlide {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         clearSlide();
-        Log.INSTANCE.w("onDetachedFromWindow, set handler = null");
+        if(DEBUG)Log.INSTANCE.w("onDetachedFromWindow, set handler = null");
         handler = null;
         replayListener = null;  //// TODO: 2016/10/17 不置为空,会导致创建一个新的该对象此处有应用
     }
@@ -124,10 +124,10 @@ public class SlideViewPager extends ViewPager implements ISlide {
     private void slideDelay() {
         if (handler == null) {
             handler = new MyHandler(this);
-            Log.INSTANCE.e("handle is null, and create");
+            if(DEBUG)Log.INSTANCE.e("handle is null, and create");
         }
         if (handler != null) {
-            Log.INSTANCE.d("delay to slide");
+            if(DEBUG)Log.INSTANCE.d("delay to slide");
             handler.removeMessages(0);
             handler.sendEmptyMessageDelayed(0, timeOut);
         }
@@ -148,24 +148,26 @@ public class SlideViewPager extends ViewPager implements ISlide {
         }
         int currentItem = getCurrentItem();
         //// TODO: 2016/10/14 此处被删除导致类型和显示的对不上,需要获取到当前界面显示的fragment
-        Fragment item1;// = ((SlideAdapter) getAdapter()).getItem(currentItem); //此处item变化导致不是当前显示的Fragment
+        Fragment item1;// = ((SlideAdapter) getAdapter()).etItem(currentItem); //此处item变化导致不是当前显示的Fragment
 //        if (DEBUG) Logger.getLogger().d("current slide Item : %d. is image : %B", currentItem,item1 instanceof ImageShowFragment);
         item1 = ((SlideAdapter) getAdapter()).getCurrentFragment();
         if (item1 == null) {
-            Log.INSTANCE.e("item is null");
+            if(DEBUG)Log.INSTANCE.e("item is null");
             return false;
         }
         ISlide.SlideItem item = (ISlide.SlideItem) item1;
         if (!canSlide) {    //触屏禁止自动滑动
             slideDelay();
-            Log.INSTANCE.e("can't slide ,wait moment");
+            if(DEBUG)Log.INSTANCE.e("can't slide ,wait moment");
             return false;
         }
         if (!force) {
             if ((!item.canSlide())) {
+                slideDelay();
                 return false;
             }
         }
+
         currentItem = currentItem + 1;
         if (currentItem >= ((SlideAdapter) getAdapter()).getPlaylist().size()) {
             if (replayListener != null) {
@@ -173,7 +175,7 @@ public class SlideViewPager extends ViewPager implements ISlide {
             }
         }
         currentItem = currentItem >= count ? 0 : currentItem;
-        Log.INSTANCE.d("setCurrentItem=" + currentItem);
+        if(DEBUG)Log.INSTANCE.d("setCurrentItem=" + currentItem);
         setCurrentItem(currentItem);
         return true;
     }

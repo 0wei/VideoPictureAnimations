@@ -1,11 +1,13 @@
 package com.luowei.slide
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
-import com.unistrong.luowei.adsslidelib.R
-import com.unistrong.luowei.commlib.Log
+import java.util.*
 
 /**
  * Created by luowei on 2017/11/3.
@@ -16,134 +18,195 @@ class Roll3DContainer : View {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
 
-    val bitmap by lazy {
-        BitmapFactory.decodeResource(resources, R.drawable.abc).let {
-            Bitmap.createScaledBitmap(it, width, height, true)
+    var currentBitmap: Bitmap? = null
+        get() {
+            if (field == null) return null
+            if (field?.width != width || field?.height != height)
+                field = Bitmap.createScaledBitmap(field, width, height, true)
+            return field
+        }
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
+    var nextBitmap: Bitmap? = null
+        set(value) {
+            field = value
+            startAnimation()
+        }
+        get() {
+            if (field == null) return null
+            if (field?.width != width || field?.height != height)
+                field = Bitmap.createScaledBitmap(field, width, height, true)
+            return field
+        }
+    private var currentValue = 0
+        set(value) {
+            field = value
+            invalidate()
+        }
+    private var valueAnimator: ValueAnimator? = null
+
+    private fun startAnimation() {
+        currentValue = 0
+        valueAnimator?.cancel()
+        valueAnimator = ValueAnimator.ofInt(0, 360)
+        valueAnimator!!.duration = 1000
+        valueAnimator!!.addUpdateListener(updateListener)
+        valueAnimator!!.addListener(toPreAnimListener)
+        valueAnimator!!.start()
+    }
+
+    private val updateListener = ValueAnimator.AnimatorUpdateListener { valueAnimator ->
+        val value = valueAnimator.animatedValue as Int
+//        Log.d("value=$value")
+        currentValue = value
+
+    }
+    lateinit var listener: AnimatorListenerAdapter
+    private val toPreAnimListener = object : AnimatorListenerAdapter() {
+        override fun onAnimationEnd(animation: Animator) {
+            super.onAnimationEnd(animation)
+            animationMode = if (animationMode == 0) 1 else 0
+            listener.onAnimationEnd(animation)
         }
     }
-    val camera = Camera()
-    val bitMatrix = Matrix()
-    val rect by lazy { Rect(0, 0, 300, height) }
-    var degree = 0
+
+    private val camera = Camera()
+    private val bitMatrix = Matrix()
+
+    private val BASE_COUNT = 10
+    private var animationMode = if (Random().nextBoolean()) 0 else 1
     override fun onDraw(canvas: Canvas) {
-//        if (degree < 0)
-//            degree = 0
-//        if (degree > 90)
-//            degree = 0
-        rote1(canvas)
+//        Log.d("currentValue=$currentValue")
+        if (animationMode == 0) {
+            rollInTurnVertical(canvas)
+        } else {
+            rollInTurnHorizontal(canvas)
+        }
+//        pixSectorHorizontal(canvas)
 //        rote2(canvas)
-        degree++
+//        currentValue++
 //        postInvalidate()
     }
 
 
-    private fun drawMath() {
+    private val BASE_DEGREE = 30f
 
-    }
-
-    private fun radio(tDegree: Float): Double {
-        return tDegree / 180 * Math.PI
-    }
-
-    private fun rote1(canvas: Canvas) {
-        val pw = width / 10f
-        Log.d("pw=$pw")
+    private fun rollInTurnVertical(canvas: Canvas) {
+//        currentBitmap ?: return
+//        nextBitmap ?: return
+        val size = width / BASE_COUNT.toFloat()
         var left = 0
         var right = 0f
-        for (i in 0..10) {
-            var tDegree = degree - i * 30f
+        for (i in 0..BASE_COUNT) {
+            var tDegree = currentValue - i * BASE_DEGREE
             if (tDegree < 0)
                 tDegree = 0f
             if (tDegree > 90)
                 tDegree = 90f
             camera.save()
-//            camera.translate(0f, 0f,-cameraY.toFloat())
+
             camera.rotateX((-tDegree))
             camera.getMatrix(bitMatrix)
-//            camera.setLocation(0f,0f,-20f)
+
             camera.restore()
             canvas.save()
-            var tAxisY = tDegree / 90f * bitmap.height
-            if (tAxisY > bitmap.height)
-                tAxisY = bitmap.height.toFloat()
+            var tAxisY = tDegree / 90f * height
+            if (tAxisY > height)
+                tAxisY = height.toFloat()
             if (tAxisY < 0)
                 tAxisY = 0f
 
-            bitMatrix.preTranslate(-pw / 2f, 0f)
-            bitMatrix.postTranslate(pw / 2f + left, tAxisY)
+            bitMatrix.preTranslate(-size / 2f, 0f)
+            bitMatrix.postTranslate(size / 2f + left, tAxisY)
             canvas.concat(bitMatrix)
-
-            right += pw
+            right += size
             val rect = Rect(left, 0, right.toInt(), height)
-            Log.d("[$left, ${right.toInt()}]")
-
-
-            canvas.drawBitmap(bitmap, rect, Rect(0, 0, rect.width(), height), null)
+            if (currentBitmap != null) {
+                canvas.drawBitmap(currentBitmap, rect, Rect(0, 0, rect.width(), height), null)
+            }
             canvas.restore()
 
 
             camera.save()
-            camera.rotateX((90 - tDegree).toFloat())
+            camera.rotateX((90 - tDegree))
             camera.getMatrix(bitMatrix)
             camera.restore()
             canvas.save()
-            bitMatrix.preTranslate(-pw / 2f, -height.toFloat())
-            bitMatrix.postTranslate(pw / 2f + left, tAxisY)
+            bitMatrix.preTranslate(-size / 2f, -height.toFloat())
+            bitMatrix.postTranslate(size / 2f + left, tAxisY)
             canvas.concat(bitMatrix)
-            canvas.drawBitmap(bitmap, rect, Rect(0, 0, rect.width(), height), null)
+            if (nextBitmap != null) {
+
+                canvas.drawBitmap(nextBitmap, rect, Rect(0, 0, rect.width(), height), null)
+            }
             canvas.restore()
             left = right.toInt()
         }
     }
 
-    var posDy = 0
-        set(value) {
-            field = value
-            postInvalidate()
-        }
-    var cameraY = 0
-        set(value) {
-            field = value
-            postInvalidate()
-        }
-
-    private fun rote2(canvas: Canvas) {
-        val pw = width / 10f
-        for (i in 0..10) {
-
-            var tDegree = degree - i * 90f / 10f
+    private fun rollInTurnHorizontal(canvas: Canvas) {
+//        currentBitmap ?: return
+//        nextBitmap ?: return
+        val size = height / BASE_COUNT.toFloat()
+        var top = 0
+        var bottom = 0f
+        for (i in 0..BASE_COUNT) {
+            var tDegree = currentValue - i * BASE_DEGREE
             if (tDegree < 0)
                 tDegree = 0f
             if (tDegree > 90)
                 tDegree = 90f
+            var tAxisX = tDegree / 90f * width
+            if (tAxisX > width)
+                tAxisX = width.toFloat()
+            if (tAxisX < 0)
+                tAxisX = 0f
+
+            camera.save()
+            camera.rotateY(tDegree)
+            camera.getMatrix(bitMatrix)
+            camera.restore()
+
+            canvas.save()
+            bitMatrix.preTranslate(0f, -size / 2f)
+            bitMatrix.postTranslate(tAxisX, size / 2f + top)
+            canvas.concat(bitMatrix)
+            bottom += size
+            val rect = Rect(0, top, width, bottom.toInt())
+            if (currentBitmap != null) {
+                canvas.drawBitmap(currentBitmap, rect, Rect(0, 0, width, rect.height()), null)
+            }
+            canvas.restore()
 
 
             camera.save()
-            camera.rotateX((90 - tDegree).toFloat())
-
+            camera.rotateY((tDegree - 90))
             camera.getMatrix(bitMatrix)
             camera.restore()
+
             canvas.save()
-            var tAxisY = tDegree / 90f * height
-            if (tAxisY > bitmap.height)
-                tAxisY = bitmap.height.toFloat()
-            if (tAxisY < 0)
-                tAxisY = 0f
-
-            bitMatrix.preTranslate(-pw / 2f, -height.toFloat())
-            bitMatrix.postTranslate(pw / 2f + pw * i, tAxisY)
-
-//            bitMatrix.preTranslate(-pw / 2f, -height.toFloat())
-//            bitMatrix.postTranslate(-pw / 2f, tAxisY)
+            bitMatrix.preTranslate(-width.toFloat(), -size / 2f)
+            bitMatrix.postTranslate(tAxisX, size / 2f + top)
             canvas.concat(bitMatrix)
-            val rect = Rect((pw * i).toInt(), 0, (pw * i + pw).toInt(), height)
-            canvas.drawBitmap(bitmap, rect, Rect(0, 0, pw.toInt(), height), null)
+            if (nextBitmap != null) {
+                canvas.drawBitmap(nextBitmap, rect, Rect(0, 0, width, rect.height()), null)
+            }
             canvas.restore()
+
+            top = bottom.toInt()
         }
     }
 
+
+    private fun pixSectorHorizontal(canvas: Canvas) {
+        canvas.drawBitmap(nextBitmap, 0f, 0f, null)
+    }
+
     fun setProgress(progress: Int) {
-        degree = progress
+        currentValue = progress
         invalidate()
     }
 }

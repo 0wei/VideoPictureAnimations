@@ -3,9 +3,11 @@ package com.luowei.slide
 import android.content.Context
 import android.graphics.Bitmap
 import android.support.v4.app.FragmentManager
+import android.support.v4.view.ViewPager
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import com.unistrong.luowei.adsslidelib.R
+import com.unistrong.luowei.commlib.Log
 import java.io.File
 import java.io.FileOutputStream
 
@@ -44,8 +46,7 @@ class Advertisement : FrameLayout {
         return if (adapter.currentFragment is VideoFragment) {
             (adapter.currentFragment as VideoFragment).getBitmap()
         } else {
-            isDrawingCacheEnabled = true
-            drawingCache
+            (adapter.currentFragment as ImageShowFragment).getBitmap()
         }
     }
 

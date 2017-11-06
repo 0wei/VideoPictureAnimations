@@ -6,8 +6,11 @@
     android:layout_height="match_parent"
     tools:context="com.unistrong.luowei.demo.MainActivity">
 
-    <com.luowei.slide.Roll3DContainer
-        android:id="@+id/slide_advertisement"
+    <!--<com.luowei.slide.Roll3DContainer-->
+
+    <com.luowei.slide.Advertisement
+
+        android:id="@+id/advertisement"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Hello World!"
