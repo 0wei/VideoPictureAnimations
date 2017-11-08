@@ -23,6 +23,7 @@ class SlideAdapter(fm: FragmentManager, private val viewPager: ISlide) : Fragmen
     }
 
     private var defaultItem: Item? = null
+    private var addDefault: Item? = null
 
     var currentFragment: Fragment? = null
         private set   //当前显示的fragment
@@ -85,29 +86,27 @@ class SlideAdapter(fm: FragmentManager, private val viewPager: ISlide) : Fragmen
 //        position %= playlist.size
         val item = playlist.getRecycleItem(pt)
 
+        val t = playlist.getRecycleItem(pt + 1)
+
+        val next = if (t.type == ItemType.Image) {
+            t.path
+        } else {
+            t.videoImage
+        }
 
         var fragment: Fragment? = null
 
         run {
             if (item.type == ItemType.Video) {
-                val videoFragment = VideoFragment.create(item.path)
+                val videoFragment = VideoFragment.create(item.path,item.videoImage,next)
                 videoFragment.setSlide(viewPager)
                 fragment = videoFragment
             } else if (item.type == ItemType.Image) {
                 val images = ArrayList<String>()
                 images.add(item.path)
-                val t = playlist.getRecycleItem(pt + 1)
-                if (t.type == ItemType.Image) {
-                    images.add(t.path)
+                if(next!=null){
+                    images.add(next)
                 }
-                /*for (i in position until playlist.size) {
-                    val t = playlist[i]
-                    if (t.type == ItemType.Image) {
-                        images.add(t.path)
-                    } else {
-                        break
-                    }
-                }*/
                 val imageShowFragment = ImageShowFragment.create(images = images.toTypedArray())
                 imageShowFragment.setSlide(viewPager)
                 fragment = imageShowFragment
@@ -139,11 +138,12 @@ class SlideAdapter(fm: FragmentManager, private val viewPager: ISlide) : Fragmen
     override fun getCount(): Int {
         if (playlist.size == 0 && defaultItem != null) {
             playlist.add(defaultItem!!)
+            addDefault = defaultItem
         }
-        if (playlist.size >= 2 && defaultItem != null) {
-            Log.d("remove default image")
-            playlist.remove(defaultItem!!)
-            defaultItem = null
+        if (playlist.size >= 2 && addDefault != null) {
+            if (DEBUG) Log.d("remove default image")
+            playlist.remove(addDefault!!)
+            addDefault = null
         }
         val count = playlist.size
         return if (count < 2) count else Integer.MAX_VALUE
@@ -154,7 +154,7 @@ class SlideAdapter(fm: FragmentManager, private val viewPager: ISlide) : Fragmen
         Video, Image
     }
 
-    class Item(internal var type: ItemType, internal var path: String) {
+    class Item(internal var type: ItemType, internal var path: String, var videoImage: String? = null) {
         private val fragment: Fragment? = null
 
         override fun equals(o: Any?): Boolean {
@@ -163,7 +163,7 @@ class SlideAdapter(fm: FragmentManager, private val viewPager: ISlide) : Fragmen
     }
 
     companion object {
-        private val DEBUG = true
+        private val DEBUG = false
     }
 
 

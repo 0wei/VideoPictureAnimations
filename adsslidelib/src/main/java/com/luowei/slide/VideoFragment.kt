@@ -1,7 +1,10 @@
 package com.luowei.slide
 
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.SurfaceTexture
 import android.media.AudioManager
 import android.media.MediaMetadataRetriever
@@ -23,28 +26,65 @@ import com.unistrong.luowei.commlib.Log
  * 视频播放
  */
 class VideoFragment : Fragment(), ISlide.SlideItem {
+    companion object {
+        private val DEBUG = false
+
+        private val PATH = "PATH"
+        private val NEXT = "NEXT"
+        private val CURRENT = "CURRENT"
+        private val BASE = 1
+        private val VIDEO_DATA_LOADED = BASE
+        private val VIDEO_SURFACE_LOADED = BASE shl 1
+        private val VIDEO_ERROR = BASE shl 2
+
+        fun create(path: String, current: String? = null, next: String? = null): VideoFragment {
+            val videoFragment = VideoFragment()
+            val args = Bundle()
+            args.putString(PATH, path)
+            args.putString(NEXT, next)
+            args.putString(CURRENT, current)
+            videoFragment.arguments = args
+            return videoFragment
+        }
+    }
 
     private var mediaPlayer: MediaPlayer? = null
     private var videoStatus: Int = 0
     private var position: Int = 0
     private lateinit var textureView: TextureView
 
-    private var slide: ISlide? = null
+    private var viewPager: SlideViewPager? = null
     var videoPath: String? = null
         private set
+
+    private lateinit var imageView: Roll3DContainer
+
+    private var nextImagePath: String? = null
+
+    private var current: String? = null
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater!!.inflate(R.layout.slide_fragment_slide_video, container, false)
         textureView = view.findViewById<TextureView>(R.id.ads_slide_video_textureView) as TextureView
         mediaPlayer = MediaPlayer()
-
+        imageView = view.findViewById<Roll3DContainer>(R.id.roll3dContainer)
+        imageView.listener = object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+//                if (ImageShowFragment.DEBUG) Log.d("imageIndex=${imageIndex - 1}, ${this@ImageShowFragment}")
+                Handler().post { viewPager?.requestSlideNext(true, false) }
+            }
+        }
         val arguments = arguments
         if (arguments != null) {
             videoPath = arguments.getString(PATH)
+            nextImagePath = arguments.getString(NEXT)
+            current = arguments.getString(CURRENT)
         }
-
-        //        Glide.with(this).load(videoPath).into(prevImageView);
+        if (current != null) {
+            imageView.currentBitmap = BitmapFactory.decodeFile(current)
+        }
+//        Glide.with(this).load(videoPath).into(imageView);
         //        prevImageView.setImageBitmap(getVideoThumbnail(videoPath));
         initMediaPlayerSurface()
         initVideoResource()
@@ -132,7 +172,6 @@ class VideoFragment : Fragment(), ISlide.SlideItem {
 
     override fun onPause() {
         super.onPause()
-
         pauseVideo()
     }
 
@@ -148,7 +187,8 @@ class VideoFragment : Fragment(), ISlide.SlideItem {
                 //
                 //                        try2PlayVideo();
                 //                    }
-                slideNext()
+//                slideNext()
+                transitionAnimation()
             }, 1000)
         }
     }
@@ -165,17 +205,17 @@ class VideoFragment : Fragment(), ISlide.SlideItem {
                 if (DEBUG) Log.d("on prepared")
             }
             mediaPlayer!!.setOnCompletionListener {
-                if (!slideNext()) { //请求滑动到下一页失败,则尝试再次播放视频
-                    try2PlayVideo()
-                } else {
-                    if (DEBUG) Log.d("slide to next ok")
-                }
+                //                if (!slideNext()) { //请求滑动到下一页失败,则尝试再次播放视频
+//                    try2PlayVideo()
+//                } else {
+//                    if (DEBUG) Log.d("viewPager to next ok")
+//                }
                 if (DEBUG) Log.d("completion")
+                transitionAnimation()
+
             }
             mediaPlayer!!.setOnErrorListener { mp, what, extra ->
-                if (!slideNext()) { //请求滑动到下一页失败,则尝试再次播放视频
-                    try2PlayVideo()
-                }
+                transitionAnimation()
                 if (DEBUG) Log.e("on error: mp=$mp, what=$what, extra=$extra")
                 true
             }
@@ -198,8 +238,24 @@ class VideoFragment : Fragment(), ISlide.SlideItem {
 
     }
 
+    private fun transitionAnimation() {
+        if (nextImagePath != null && viewPager?.scrollIdle == true) {
+            imageView.currentBitmap = getBitmap()
+            imageView.visibility = View.VISIBLE
+            imageView.nextBitmap = BitmapFactory.decodeFile(nextImagePath)
+        } else {
+            slideOrPlay()
+        }
+    }
+
+    private fun slideOrPlay() {
+        if (!slideNext()) { //请求滑动到下一页失败,则尝试再次播放视频
+            try2PlayVideo()
+        }
+    }
+
     private fun slideNext(): Boolean {
-        return slide!!.requestSlideNext()
+        return viewPager!!.requestSlideNext()
     }
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
@@ -222,6 +278,15 @@ class VideoFragment : Fragment(), ISlide.SlideItem {
                 && !mediaPlayer!!.isPlaying
                 && userVisibleHint) {
             //            prevImageView.setVisibility(View.GONE);
+            val alpha = imageView.animate().alpha(0f)
+            alpha.setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator?) {
+                    super.onAnimationEnd(animation)
+                    imageView.visibility = View.INVISIBLE
+                    imageView.alpha = 1f
+                }
+            })
+            alpha.start()
             mediaPlayer!!.start()
             return true
         }
@@ -267,26 +332,10 @@ class VideoFragment : Fragment(), ISlide.SlideItem {
     }
 
     override fun setSlide(slide: ISlide) {
-        this.slide = slide
+        this.viewPager = slide as SlideViewPager
+        if (DEBUG) Log.d("currentItem=${viewPager!!.currentItem}, $this")
     }
 
-    companion object {
-        private val DEBUG = false
-
-        private val PATH = "PATH"
-        private val BASE = 1
-        private val VIDEO_DATA_LOADED = BASE
-        private val VIDEO_SURFACE_LOADED = BASE shl 1
-        private val VIDEO_ERROR = BASE shl 2
-
-        fun create(path: String): VideoFragment {
-            val videoFragment = VideoFragment()
-            val args = Bundle()
-            args.putString(PATH, path)
-            videoFragment.arguments = args
-            return videoFragment
-        }
-    }
 
 }// Required empty public constructor
 //        audioManager = (AudioManager) App.getContext().getSystemService(Context.AUDIO_SERVICE);

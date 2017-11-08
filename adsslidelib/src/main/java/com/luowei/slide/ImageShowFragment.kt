@@ -34,7 +34,7 @@ class ImageShowFragment : Fragment(), ISlide.SlideItem {
         imageView.listener = object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
                 if (DEBUG) Log.d("imageIndex=${imageIndex - 1}, ${this@ImageShowFragment}")
-                Handler().post { viewPager?.setCurrentItem(viewPager!!.currentItem + 1, false) }
+                Handler().post { viewPager?.requestSlideNext(true, false) }
             }
         }
         imagePath = arguments.getString(PATH)
@@ -49,7 +49,7 @@ class ImageShowFragment : Fragment(), ISlide.SlideItem {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        imageView.currentBitmap = BitmapFactory.decodeFile(images[imageIndex])
+        imageView.currentBitmap = BitmapFactory.decodeFile(images[imageIndex%images.size])
     }
 
     override fun canSlide(): Boolean {

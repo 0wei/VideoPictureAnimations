@@ -2,12 +2,12 @@ package com.luowei.slide
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Handler
+import android.os.HandlerThread
 import android.support.v4.app.FragmentManager
-import android.support.v4.view.ViewPager
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import com.unistrong.luowei.adsslidelib.R
-import com.unistrong.luowei.commlib.Log
 import java.io.File
 import java.io.FileOutputStream
 
@@ -23,18 +23,33 @@ class Advertisement : FrameLayout {
     var viewPager: SlideViewPager = SlideViewPager(context)
     lateinit var adapter: SlideAdapter
     val DEFAULT_IMAGE: String
+    var workHandler: Handler
+    private val BASEPATH = context.getExternalFilesDir("Advertisement").absolutePath
 
     init {
         viewPager.id = R.id.advertisementViewPager
         addView(viewPager)
-        val file = File(context.getExternalFilesDir(null), "ADS_DEFAULT.jpg")
+        val file = File(BASEPATH, "ADS_DEFAULT.jpg")
         DEFAULT_IMAGE = file.absolutePath
         if (!file.exists()) {
             context.resources.openRawResource(R.raw.ads).copyTo(FileOutputStream(file))
         }
+        val handlerThread = HandlerThread("AdvertisementVideoToImageThread")
+        handlerThread.start()
+        workHandler = Handler(handlerThread.looper)
     }
 
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        workHandler.looper.quit()
+    }
+
+
     fun addItem(item: SlideAdapter.Item) {
+        if (item.type == SlideAdapter.ItemType.Video) {
+            item.videoImage = File(BASEPATH, File(item.path).name).absolutePath
+            workHandler.post { VideoToImage.saveImage(context, item.path, item.videoImage!!) }
+        }
         adapter.addItem(item)
     }
 

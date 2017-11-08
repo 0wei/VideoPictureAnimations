@@ -13,4 +13,8 @@
         android:id="@+id/ads_slide_video_textureView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+    <com.luowei.slide.Roll3DContainer
+        android:id="@+id/roll3dContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </RelativeLayout>
