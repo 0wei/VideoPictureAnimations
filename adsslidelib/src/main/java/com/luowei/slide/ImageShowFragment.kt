@@ -58,6 +58,7 @@ class ImageShowFragment : Fragment(), ISlide.SlideItem {
         if (imageIndex >= images.size) {
             return true
         }
+        if(viewPager!!.adapter.count>1)
         imageView.nextBitmap = BitmapFactory.decodeFile(images[imageIndex])
         return false
     }

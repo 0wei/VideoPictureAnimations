@@ -1,17 +1,14 @@
 package com.luowei.slide
 
+
 import android.content.Context
 import android.database.DataSetObserver
 import android.os.Handler
 import android.os.Message
-import android.support.v4.app.Fragment
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.util.AttributeSet
-
-
 import com.unistrong.luowei.commlib.Log
-
 import java.lang.ref.WeakReference
 
 /**
@@ -24,7 +21,6 @@ class SlideViewPager : ViewPager, ISlide {
 
     private var timerHandler: Handler? = null
     private var timeOut = 5000
-    //    private int timeOut = 500;
     var scrollIdle = true
     private var isAutoSlideRun: Boolean = false  //当前是否需要重新启动滑动
     private var replayListener: PlayListener? = null
@@ -32,10 +28,10 @@ class SlideViewPager : ViewPager, ISlide {
 
     override fun requestSlideNext(force: Boolean, animator: Boolean): Boolean {
         clearSlide()
-        return slideNext(force,animator)
+        return slideNext(force, animator)
     }
 
-    fun clearSlide() {
+    private fun clearSlide() {
         if (timerHandler != null)
             timerHandler!!.removeMessages(0)
     }
@@ -126,7 +122,7 @@ class SlideViewPager : ViewPager, ISlide {
         slideNext(false)
     }
 
-    private fun slideNext(force: Boolean,animator: Boolean=true): Boolean {
+    private fun slideNext(force: Boolean, animator: Boolean = true): Boolean {
         if (!scrollIdle) {    //触屏禁止自动滑动
             slideDelay()
             if (DEBUG) Log.e("can't slide ,wait moment")
@@ -142,9 +138,9 @@ class SlideViewPager : ViewPager, ISlide {
         }
         var currentItem = currentItem
         //// TODO: 2016/10/14 此处被删除导致类型和显示的对不上,需要获取到当前界面显示的fragment
-        val item1: Fragment?// = ((SlideAdapter) getAdapter()).etItem(currentItem); //此处item变化导致不是当前显示的Fragment
+//        val item1: Fragment?// = ((SlideAdapter) getAdapter()).etItem(currentItem); //此处item变化导致不是当前显示的Fragment
         //        if (DEBUG) Logger.getLogger().d("current slide Item : %d. is image : %B", currentItem,item1 instanceof ImageShowFragment);
-        item1 = (adapter as SlideAdapter).currentFragment
+        val item1 = (adapter as SlideAdapter).currentFragment
         if (item1 == null) {
             if (DEBUG) Log.e("item is null")
             return false
@@ -166,7 +162,7 @@ class SlideViewPager : ViewPager, ISlide {
         }
         currentItem = if (currentItem >= count) 0 else currentItem
         if (DEBUG) Log.d("setCurrentItem=" + currentItem)
-        setCurrentItem(currentItem,animator)
+        setCurrentItem(currentItem, animator)
         return true
     }
 

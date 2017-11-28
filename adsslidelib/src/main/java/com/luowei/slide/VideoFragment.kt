@@ -239,7 +239,7 @@ class VideoFragment : Fragment(), ISlide.SlideItem {
     }
 
     private fun transitionAnimation() {
-        if (nextImagePath != null && viewPager?.scrollIdle == true) {
+        if (nextImagePath != null && viewPager?.scrollIdle == true&&viewPager!!.adapter.count>1) {
             imageView.currentBitmap = getBitmap()
             imageView.visibility = View.VISIBLE
             imageView.nextBitmap = BitmapFactory.decodeFile(nextImagePath)
