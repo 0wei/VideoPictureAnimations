@@ -242,6 +242,7 @@ class VideoFragment : Fragment(), ISlide.SlideItem {
         if (nextImagePath != null && viewPager?.scrollIdle == true&&viewPager!!.adapter.count>1) {
             imageView.currentBitmap = getBitmap()
             imageView.visibility = View.VISIBLE
+            textureView.visibility=View.INVISIBLE
             imageView.nextBitmap = BitmapFactory.decodeFile(nextImagePath)
         } else {
             slideOrPlay()

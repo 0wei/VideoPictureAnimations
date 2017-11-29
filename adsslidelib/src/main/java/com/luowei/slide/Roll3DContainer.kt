@@ -8,6 +8,7 @@ import android.graphics.*
 import android.support.annotation.IntRange
 import android.util.AttributeSet
 import android.view.View
+import android.view.animation.DecelerateInterpolator
 import com.unistrong.luowei.commlib.Log
 import java.util.*
 
@@ -17,8 +18,6 @@ import java.util.*
 class Roll3DContainer : View {
 
     companion object {
-        private val BASE_COUNT = 10
-        private val BASE_DEGREE = 30f
         private val DEBUG = false
     }
 
@@ -58,11 +57,13 @@ class Roll3DContainer : View {
         }
     private var valueAnimator: ValueAnimator? = null
 
+    private val paint = Paint()
     private fun startAnimation() {
         currentValue = 0
         valueAnimator?.cancel()
         valueAnimator = ValueAnimator.ofInt(0, 100)
-        valueAnimator!!.duration = 1000
+        valueAnimator!!.duration = 1500
+        valueAnimator!!.interpolator = DecelerateInterpolator()
         valueAnimator!!.addUpdateListener(updateListener)
         valueAnimator!!.addListener(toPreAnimListener)
         valueAnimator!!.start()
@@ -74,27 +75,26 @@ class Roll3DContainer : View {
         currentValue = value
 
     }
-    lateinit var listener: AnimatorListenerAdapter
+    var listener: AnimatorListenerAdapter? = null
     private val toPreAnimListener = object : AnimatorListenerAdapter() {
         override fun onAnimationEnd(animation: Animator) {
             super.onAnimationEnd(animation)
-            listener.onAnimationEnd(animation)
+            listener?.onAnimationEnd(animation)
         }
     }
 
     private val camera = Camera()
     private val bitMatrix = Matrix()
 
-
     private val rollInTurnVertical = { canvas: Canvas ->
-        //        currentBitmap ?: return
-//        nextBitmap ?: return
-        val percent = 3.90f
-        val size = width / BASE_COUNT.toFloat()
+        val count = 10
+        val degree = 30
+        val percent = percent(count, degree,90)
+        val size = width / count.toFloat()
         var left = 0
         var right = 0f
-        for (i in 0..BASE_COUNT) {
-            var tDegree = currentValue * percent - i * BASE_DEGREE
+        for (i in 0..count) {
+            var tDegree = currentValue * percent - i * degree.toFloat()
             if (tDegree < 0)
                 tDegree = 0f
             if (tDegree > 90)
@@ -117,8 +117,9 @@ class Roll3DContainer : View {
             canvas.concat(bitMatrix)
             right += size
             val rect = Rect(left, 0, right.toInt(), height)
+            val dstRect = Rect(0, 0, rect.width(), height)
             if (currentBitmap != null) {
-                canvas.drawBitmap(currentBitmap, rect, Rect(0, 0, rect.width(), height), null)
+                canvas.drawBitmap(currentBitmap, rect, dstRect, null)
             }
             canvas.restore()
 
@@ -133,7 +134,7 @@ class Roll3DContainer : View {
             canvas.concat(bitMatrix)
             if (nextBitmap != null) {
 
-                canvas.drawBitmap(nextBitmap, rect, Rect(0, 0, rect.width(), height), null)
+                canvas.drawBitmap(nextBitmap, rect, dstRect, null)
             }
             canvas.restore()
             left = right.toInt()
@@ -143,14 +144,16 @@ class Roll3DContainer : View {
     private val rollInTurnHorizontal = { canvas: Canvas ->
         //        currentBitmap ?: return
 //        nextBitmap ?: return
-//        100 *percent- BASE_COUNT*BASE_DEGREE = 90
+//        100 *percent- count*degree = 90
 //        val percent = (90+300)/100
-        val percent = 3.90f
-        val size = height / BASE_COUNT.toFloat()
+        val count = 10
+        val degree = 30
+        val percent = percent(count, degree,90)
+        val size = height / count.toFloat()
         var top = 0
         var bottom = 0f
-        for (i in 0..BASE_COUNT) {
-            var tDegree = currentValue * percent - i * BASE_DEGREE
+        for (i in 0..count) {
+            var tDegree = currentValue * percent - i * degree.toFloat()
             if (tDegree < 0)
                 tDegree = 0f
             if (tDegree > 90)
@@ -172,8 +175,9 @@ class Roll3DContainer : View {
             canvas.concat(bitMatrix)
             bottom += size
             val rect = Rect(0, top, width, bottom.toInt())
+            val dstRect = Rect(0, 0, width, rect.height())
             if (currentBitmap != null) {
-                canvas.drawBitmap(currentBitmap, rect, Rect(0, 0, width, rect.height()), null)
+                canvas.drawBitmap(currentBitmap, rect, dstRect, null)
             }
             canvas.restore()
 
@@ -188,7 +192,7 @@ class Roll3DContainer : View {
             bitMatrix.postTranslate(tAxisX, size / 2f + top)
             canvas.concat(bitMatrix)
             if (nextBitmap != null) {
-                canvas.drawBitmap(nextBitmap, rect, Rect(0, 0, width, rect.height()), null)
+                canvas.drawBitmap(nextBitmap, rect, dstRect, null)
             }
             canvas.restore()
 
@@ -207,36 +211,36 @@ class Roll3DContainer : View {
      * roll left to right
      */
     private fun rollBlindsHorizontal(canvas: Canvas, nest: Boolean = true) {
-//        BASE_COUNT*180
-        val percent = 4.8f    //18度
+//        count*180
+        val count = 15
+        val degree = 40
+        val percent = percent(count, degree,180)    //18度
         //currentValue [0,100]
         //
         //180+300 = 4.8
         //currentValue = 100,
         //last count = 180:
         //100 * percent - 10 * 30 = 180
-        //100 *percent- BASE_COUNT*BASE_DEGREE = 180
+        //100 *percent- count*degree = 180
         //100 * percent = 180 + 300
-        val size = width / BASE_COUNT.toFloat()
+        val size = width / count.toFloat()
         var left = 0
         var right = 0f
 
-        for (i in 0..BASE_COUNT) {
+        for (i in 0..count) {
             var tDegree = if (nest)
-                currentValue * percent - i * BASE_DEGREE
+                currentValue * percent - i * degree.toFloat()
             else currentValue * 1.8f
-
 //            if(DEBUG)Log.d("tDegree=$tDegree")
             if (tDegree > 180) tDegree = 180f
             if (tDegree < 0) tDegree = 0f
             right += size
-            val rect = Rect(left, 0, right.toInt(), height)
-
+            val srcRect = Rect(left, 0, right.toInt(), height)
+            val dstRect = Rect(0, 0, srcRect.width(), srcRect.height())
             val currDegree = tDegree
-            if(DEBUG)Log.d("currDegree=$currDegree")
+            if (DEBUG) Log.d("currDegree=$currDegree")
             if (currDegree <= 90) {
                 camera.save()
-
                 camera.rotateY(currDegree)
                 camera.getMatrix(bitMatrix)
                 camera.restore()
@@ -245,7 +249,7 @@ class Roll3DContainer : View {
                 bitMatrix.postTranslate(size / 2f + left, 0f)
                 canvas.concat(bitMatrix)
                 if (currentBitmap != null) {
-                    canvas.drawBitmap(currentBitmap, rect, Rect(0, 0, rect.width(), rect.height()), null)
+                    canvas.drawBitmap(currentBitmap, srcRect, dstRect, null)
                 }
                 canvas.restore()
             }
@@ -261,7 +265,7 @@ class Roll3DContainer : View {
                 bitMatrix.postTranslate(size / 2f + left, 0f)
                 canvas.concat(bitMatrix)
                 if (nextBitmap != null) {
-                    canvas.drawBitmap(nextBitmap, rect, Rect(0, 0, rect.width(), rect.height()), null)
+                    canvas.drawBitmap(nextBitmap, srcRect, dstRect, null)
                 }
                 canvas.restore()
             }
@@ -270,14 +274,80 @@ class Roll3DContainer : View {
     }
 
 
+    private val fade = { canvas: Canvas ->
+        if (currentBitmap != null) {
+            paint.alpha = ((100 - currentValue) * 2.55).toInt()
+            canvas.drawBitmap(currentBitmap, 0f, 0f, paint)
+        }
+        if (nextBitmap != null) {
+            paint.alpha = ((currentValue) * 2.55).toInt()
+            canvas.drawBitmap(nextBitmap, 0f, 0f, paint)
+        }
+    }
+
+    private fun percent(count: Int, step: Int, result: Int): Float {
+        return (result + count * step) / 100f
+    }
+
+    private val slideVertical = { canvas: Canvas ->
+        slide(canvas,true)
+    }
+    private val slideVerticalInverse = { canvas: Canvas ->
+        slide(canvas,false)
+    }
+    private fun slide(canvas: Canvas, slideCurrentBmp: Boolean = true) {
+        val BASE_COUNT = 10
+        val first: Bitmap?
+        val secod: Bitmap?
+        if (slideCurrentBmp) {
+            first = nextBitmap
+            secod = currentBitmap
+        } else {
+            first = currentBitmap
+            secod = nextBitmap
+        }
+
+        if (first != null) {
+            canvas.drawBitmap(first, 0f, 0f, null)
+        }
+        val size = width / BASE_COUNT.toFloat()
+        var left = 0
+        var right = 0f
+        val baseHeight = height / 3
+        val percent = percent(BASE_COUNT, baseHeight, height)
+        //100
+        for (i in 0..BASE_COUNT) {
+            right += size
+            var top = if (!slideCurrentBmp) {
+                (100 - currentValue) * percent - i * baseHeight
+            } else (currentValue) * percent - i * baseHeight
+            if (top < 0) top = 0f
+            val srcRect = Rect(left, 0, right.toInt(), height)
+            val dstRect = Rect(left, 0, right.toInt(), height)
+            canvas.save()
+            bitMatrix.reset()
+            bitMatrix.setTranslate(0f, top.toFloat())
+            canvas.concat(bitMatrix)
+            if (secod != null) {
+                canvas.drawBitmap(secod, srcRect, dstRect, null)
+            }
+            canvas.restore()
+            left = right.toInt()
+        }
+    }
+
     private val animationsSet = arrayOf(rollInTurnVertical, rollInTurnHorizontal, rollBlindsHorizontalNest,
-            rollBlindsHorizontalDefault)
+            rollBlindsHorizontalDefault, fade, slideVertical,slideVerticalInverse)
 
     private var currentAnimation = animationsSet[Random().nextInt(animationsSet.size)]
 
     override fun onDraw(canvas: Canvas) {
 //        if(DEBUG)Log.d("currentValue=$currentValue")
         currentAnimation.invoke(canvas)
+//        rollBlindsHorizontal(canvas,false)
+//        rollInTurnHorizontal(canvas)
+//        slide(canvas,false)
+//        slideVertical(canvas)
 //        rollInTurnVertical(canvas)
 //        rollInTurnHorizontal(canvas)
 //        rollBlindsHorizontal(canvas)
