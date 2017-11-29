@@ -44,8 +44,8 @@ dependencies {
     testCompile 'junit:junit:4.12'
 //    compile project(':commlib')
     compile project(':ThirdOpenSource/Common:commlib')
-//    compile 'com.github.luv135:Common:-SNAPSHOT'
-
+//    compile project(':../ThirdOpenSource/Common:commlib')
+//    compile 'com.github.luv135:Common:v1.0'
 }
 
 repositories {

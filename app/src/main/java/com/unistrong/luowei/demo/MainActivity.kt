@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         (findViewById(R.id.roteSeekBar) as SeekBar).setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-//                advertisement.setProgress(progress)
+                advertisement.setProgress(progress)
 //                slide_advertisement.nextBitmap = BitmapFactory.decodeFile("/sdcard/adv2.png")
             }
 
@@ -28,12 +28,14 @@ class MainActivity : AppCompatActivity() {
 
         })
 
-        advertisement.setFragmentManager(supportFragmentManager)
+       /* advertisement.setFragmentManager(supportFragmentManager)
         advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/adv1.png"))
         advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/adv2.png"))
         advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/adv3.png"))
-        advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Video, "/sdcard/1.mp4"))
-//        slide_advertisement.currentBitmap = BitmapFactory.decodeFile("/sdcard/adv1.png")
+        advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Video, "/sdcard/1.mp4"))*/
+        advertisement.currentBitmap = BitmapFactory.decodeResource(resources, R.mipmap.maxresdefault)
+        advertisement.nextBitmap=  BitmapFactory.decodeResource(resources, R.mipmap.fdae)
+//        advertisement.currentBitmap = BitmapFactory.decodeFile("/sdcard/adv1.png")
 
     }
 }
