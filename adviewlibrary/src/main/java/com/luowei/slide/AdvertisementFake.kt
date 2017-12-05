@@ -1,16 +1,9 @@
 package com.luowei.slide
 
 import android.content.Context
-import android.graphics.Point
-import android.graphics.PointF
-import android.support.v4.view.ViewCompat
-import android.support.v4.widget.ViewDragHelper.INVALID_POINTER
 import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
-import android.view.VelocityTracker
-import android.view.ViewGroup
-import android.widget.Scroller
 import com.unistrong.luowei.commlib.Log
 import java.util.*
 

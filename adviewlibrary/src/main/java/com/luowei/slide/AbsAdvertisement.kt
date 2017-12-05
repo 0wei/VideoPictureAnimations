@@ -41,7 +41,7 @@ abstract class AbsAdvertisement : FrameLayout {
     }
 
 
-    fun addItem(item: SlideAdapter.Item) {
+    open fun addItem(item: SlideAdapter.Item) {
         if (item.type == SlideAdapter.ItemType.Video) {
             item.videoImage = File(BASEPATH, File(item.path).name).absolutePath
             workHandler.post { VideoToImage.saveImage(context, item.path, item.videoImage!!) }

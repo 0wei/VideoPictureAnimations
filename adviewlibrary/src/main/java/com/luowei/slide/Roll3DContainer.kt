@@ -26,6 +26,7 @@ class Roll3DContainer : View {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
 
+
     var currentBitmap: Bitmap? = null
         get() {
             if (field == null) return null
@@ -35,12 +36,14 @@ class Roll3DContainer : View {
         }
         set(value) {
             field = value
-            postInvalidate()
+            currentValue=0
+            invalidate()
         }
 
     var nextBitmap: Bitmap? = null
         set(value) {
             field = value
+            currentAnimation = animationsSet[Random().nextInt(animationsSet.size)]
             startAnimation()
         }
         get() {
@@ -62,7 +65,7 @@ class Roll3DContainer : View {
         currentValue = 0
         valueAnimator?.cancel()
         valueAnimator = ValueAnimator.ofInt(0, 100)
-        valueAnimator!!.duration = 1500
+        valueAnimator!!.duration = 1000
         valueAnimator!!.interpolator = DecelerateInterpolator()
         valueAnimator!!.addUpdateListener(updateListener)
         valueAnimator!!.addListener(toPreAnimListener)
