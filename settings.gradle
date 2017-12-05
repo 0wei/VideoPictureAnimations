@@ -1,3 +1,5 @@
-include ':app', ':adsslidelib'
+include ':app', ':adviewlibrary'
 
-include '../ThirdOpenSource/Common:commlib'
+//include '../ThirdOpenSource/Common:commlib'
+
+include ':../../Libs/Common:commlib'

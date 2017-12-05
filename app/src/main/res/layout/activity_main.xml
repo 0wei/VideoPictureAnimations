@@ -8,8 +8,8 @@
 
     <!--<com.luowei.slide.Roll3DContainer-->
 
-    <com.luowei.slide.Advertisement
-
+    <!--<com.luowei.slide.Advertisement-->
+    <com.luowei.slide.AdvertisementFake
         android:id="@+id/advertisement"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -34,11 +34,13 @@
             android:layout_height="wrap_content"
             android:max="100" />
 
-        <SeekBar
-            android:id="@+id/posDySeekBar"
+        <Button
+            android:id="@+id/button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:max="720" />      <SeekBar
+            android:max="720" />
+
+        <SeekBar
             android:id="@+id/cameraY"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

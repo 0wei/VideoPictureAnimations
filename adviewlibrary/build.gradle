@@ -42,8 +42,9 @@ dependencies {
 
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-//    compile project(':commlib')
-    compile project(':ThirdOpenSource/Common:commlib')
+        compile 'com.github.luv135:Common:-SNAPSHOT'
+//    compile project(':../../Libs/Common:commlib')
+//    compile project(':ThirdOpenSource/Common:commlib')
 //    compile project(':../ThirdOpenSource/Common:commlib')
 //    compile 'com.github.luv135:Common:v1.0'
 }

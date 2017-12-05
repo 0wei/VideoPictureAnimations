@@ -79,6 +79,7 @@ class Roll3DContainer : View {
     private val toPreAnimListener = object : AnimatorListenerAdapter() {
         override fun onAnimationEnd(animation: Animator) {
             super.onAnimationEnd(animation)
+            currentBitmap = nextBitmap
             listener?.onAnimationEnd(animation)
         }
     }
@@ -89,7 +90,7 @@ class Roll3DContainer : View {
     private val rollInTurnVertical = { canvas: Canvas ->
         val count = 10
         val degree = 30
-        val percent = percent(count, degree,90)
+        val percent = percent(count, degree, 90)
         val size = width / count.toFloat()
         var left = 0
         var right = 0f
@@ -148,7 +149,7 @@ class Roll3DContainer : View {
 //        val percent = (90+300)/100
         val count = 10
         val degree = 30
-        val percent = percent(count, degree,90)
+        val percent = percent(count, degree, 90)
         val size = height / count.toFloat()
         var top = 0
         var bottom = 0f
@@ -214,7 +215,7 @@ class Roll3DContainer : View {
 //        count*180
         val count = 15
         val degree = 40
-        val percent = percent(count, degree,180)    //18度
+        val percent = percent(count, degree, 180)    //18度
         //currentValue [0,100]
         //
         //180+300 = 4.8
@@ -290,11 +291,12 @@ class Roll3DContainer : View {
     }
 
     private val slideVertical = { canvas: Canvas ->
-        slide(canvas,true)
+        slide(canvas, true)
     }
     private val slideVerticalInverse = { canvas: Canvas ->
-        slide(canvas,false)
+        slide(canvas, false)
     }
+
     private fun slide(canvas: Canvas, slideCurrentBmp: Boolean = true) {
         val BASE_COUNT = 10
         val first: Bitmap?
@@ -337,7 +339,7 @@ class Roll3DContainer : View {
     }
 
     private val animationsSet = arrayOf(rollInTurnVertical, rollInTurnHorizontal, rollBlindsHorizontalNest,
-            rollBlindsHorizontalDefault, fade, slideVertical,slideVerticalInverse)
+            rollBlindsHorizontalDefault, fade, slideVertical, slideVerticalInverse)
 
     private var currentAnimation = animationsSet[Random().nextInt(animationsSet.size)]
 

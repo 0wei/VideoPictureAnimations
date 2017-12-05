@@ -14,21 +14,17 @@ import java.io.FileOutputStream
 /**
  * Created by luowei on 2017/9/11.
  */
-class Advertisement : FrameLayout {
+abstract class AbsAdvertisement : FrameLayout {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
 
-    var viewPager: SlideViewPager = SlideViewPager(context)
-    lateinit var adapter: SlideAdapter
     val DEFAULT_IMAGE: String
     var workHandler: Handler
     private val BASEPATH = context.getExternalFilesDir("Advertisement").absolutePath
 
     init {
-        viewPager.id = R.id.advertisementViewPager
-        addView(viewPager)
         val file = File(BASEPATH, "ADS_DEFAULT.jpg")
         DEFAULT_IMAGE = file.absolutePath
         if (!file.exists()) {
@@ -50,28 +46,12 @@ class Advertisement : FrameLayout {
             item.videoImage = File(BASEPATH, File(item.path).name).absolutePath
             workHandler.post { VideoToImage.saveImage(context, item.path, item.videoImage!!) }
         }
-        adapter.addItem(item)
     }
 
     fun clear() {
-        adapter.clear()
     }
 
-    fun getBitmap(): Bitmap? {
-        return if (adapter.currentFragment is VideoFragment) {
-            (adapter.currentFragment as VideoFragment).getBitmap()
-        } else {
-            (adapter.currentFragment as ImageShowFragment).getBitmap()
-        }
-    }
-
-    fun setFragmentManager(fm: FragmentManager) {
-        adapter = SlideAdapter(fm, viewPager)
-        viewPager.adapter = adapter
-        adapter.setDefault(SlideAdapter.Item(SlideAdapter.ItemType.Image, DEFAULT_IMAGE))
-    }
 
     fun setDefaultImageFile(path: String) {
-        adapter.setDefault(SlideAdapter.Item(SlideAdapter.ItemType.Image, path))
     }
 }
