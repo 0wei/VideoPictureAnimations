@@ -52,6 +52,6 @@ abstract class AbsAdvertisement : FrameLayout {
     }
 
 
-    fun setDefaultImageFile(path: String) {
+    open fun setDefaultImageFile(path: String) {
     }
 }

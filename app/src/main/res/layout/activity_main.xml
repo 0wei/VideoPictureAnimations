@@ -10,7 +10,8 @@
 
     <!--<com.luowei.slide.Advertisement-->
     <!--<com.luowei.slide.AdvertisementFake-->
-    <com.luowei.slide.StaticAdvertisement
+    <!--<com.luowei.slide.StaticAdvertisement-->
+    <com.luowei.slide.ViewPagerAdvertisement
         android:id="@+id/advertisement"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

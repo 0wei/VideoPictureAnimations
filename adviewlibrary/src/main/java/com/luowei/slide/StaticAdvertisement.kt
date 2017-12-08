@@ -7,7 +7,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Message
+import android.os.Parcelable
 import android.util.AttributeSet
+import android.util.SparseArray
 import com.unistrong.luowei.commlib.Log
 import com.unistrong.luowei.kotlin.hide
 import com.unistrong.luowei.kotlin.show
@@ -23,8 +25,10 @@ class StaticAdvertisement : AbsAdvertisement {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
 
+    private val DEBUG = false
     private var timeOut = 2000
-    private var currentIndex = 0
+    var currentIndex = 0
+        private set
     private val playlist = ArrayList<SlideAdapter.Item>()
     private var timerHandler: Handler? = MyHandler(this)
 
@@ -41,7 +45,7 @@ class StaticAdvertisement : AbsAdvertisement {
         }
         roll3dContainer.listener = listener
         textureView.listener = {
-            Log.d("play ok")
+            if (DEBUG) Log.d("play ok")
             roll3dContainer.currentBitmap = textureView.bitmap
             roll3dContainer.show()
             textureView.hide()
@@ -50,7 +54,7 @@ class StaticAdvertisement : AbsAdvertisement {
     }
 
     private fun updateItem() {
-        Log.d()
+        if (DEBUG) Log.d()
         if (currentItem!!.type == SlideAdapter.ItemType.Image) {
             slideDelay()
         } else {
@@ -85,7 +89,7 @@ class StaticAdvertisement : AbsAdvertisement {
     }
 
     private fun slideDelay() {
-        Log.d()
+        if (DEBUG) Log.d()
         timerHandler!!.removeMessages(0)
         timerHandler!!.sendEmptyMessageDelayed(0, timeOut.toLong())
     }
@@ -94,14 +98,14 @@ class StaticAdvertisement : AbsAdvertisement {
 
     private fun slideNext(force: Boolean = false) {
         if (playlist.size <= 1) {
-            if (currentItem!!.type == SlideAdapter.ItemType.Video) {
+            if (currentItem?.type == SlideAdapter.ItemType.Video) {
                 updateItem()
             }
             return
         }
         if (currentItem?.type == SlideAdapter.ItemType.Video && !force) {
             slideDelay()
-            Log.d("wait..")
+            if (DEBUG) Log.d("wait..")
             return
         }
 
@@ -111,7 +115,7 @@ class StaticAdvertisement : AbsAdvertisement {
         if (currentItem!!.type == SlideAdapter.ItemType.Video) {
             textureView.initVideoResource(currentItem!!.path)
             updateItem()
-        } else{
+        } else {
             roll3dContainer.nextBitmap = getImagePath(currentItem!!)
         }
     }
@@ -140,12 +144,12 @@ class StaticAdvertisement : AbsAdvertisement {
         var pager: WeakReference<StaticAdvertisement> = WeakReference(pager)
 
         override fun handleMessage(msg: Message) {
-            val slideViewPager = pager.get()
-            if (slideViewPager != null) {
-                slideViewPager.slideNext()
-            }
+            pager.get()?.slideNext()
 
         }
     }
 
+    override fun setDefaultImageFile(path: String) {
+        roll3dContainer.currentBitmap = BitmapFactory.decodeFile(path)
+    }
 }

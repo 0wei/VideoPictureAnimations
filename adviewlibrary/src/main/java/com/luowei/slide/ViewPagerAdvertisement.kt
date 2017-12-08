@@ -14,7 +14,7 @@ import java.io.FileOutputStream
 /**
  * Created by luowei on 2017/9/11.
  */
-open class ViewPagerAdvertisement : FrameLayout {
+class ViewPagerAdvertisement : FrameLayout {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
