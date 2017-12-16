@@ -30,13 +30,13 @@ class Roll3DContainer : View {
     var currentBitmap: Bitmap? = null
         get() {
             if (field == null) return null
-            if (field?.width != width || field?.height != height)
+            if ((field?.width != width || field?.height != height) && width > 0 && height > 0)
                 field = Bitmap.createScaledBitmap(field, width, height, true)
             return field
         }
         set(value) {
             field = value
-            currentValue=0
+            currentValue = 0
             invalidate()
         }
 
@@ -48,7 +48,7 @@ class Roll3DContainer : View {
         }
         get() {
             if (field == null) return null
-            if (field?.width != width || field?.height != height)
+            if ((field?.width != width || field?.height != height) && width > 0 && height > 0)
                 field = Bitmap.createScaledBitmap(field, width, height, true)
             return field
         }
@@ -65,8 +65,8 @@ class Roll3DContainer : View {
         currentValue = 0
         valueAnimator?.cancel()
         valueAnimator = ValueAnimator.ofInt(0, 100)
-        valueAnimator!!.duration = 1000
-        valueAnimator!!.interpolator = DecelerateInterpolator()
+        valueAnimator!!.duration = 500
+//        valueAnimator!!.interpolator = DecelerateInterpolator()
         valueAnimator!!.addUpdateListener(updateListener)
         valueAnimator!!.addListener(toPreAnimListener)
         valueAnimator!!.start()
@@ -289,6 +289,16 @@ class Roll3DContainer : View {
         }
     }
 
+    private val slideRight2Left = { canvas: Canvas ->
+        if (currentBitmap != null) {
+            canvas.drawBitmap(currentBitmap, -width * currentValue / 100f, 0f, paint)
+        }
+        if (nextBitmap != null) {
+            canvas.drawBitmap(nextBitmap, width * (100 - currentValue) / 100f, 0f, paint)
+        }
+    }
+
+
     private fun percent(count: Int, step: Int, result: Int): Float {
         return (result + count * step) / 100f
     }
@@ -318,7 +328,7 @@ class Roll3DContainer : View {
         val size = width / BASE_COUNT.toFloat()
         var left = 0
         var right = 0f
-        val baseHeight = height / 3
+        val baseHeight = height / 2
         val percent = percent(BASE_COUNT, baseHeight, height)
         //100
         for (i in 0..BASE_COUNT) {
@@ -341,8 +351,10 @@ class Roll3DContainer : View {
         }
     }
 
-    private val animationsSet = arrayOf(rollInTurnVertical, rollInTurnHorizontal, rollBlindsHorizontalNest,
-            rollBlindsHorizontalDefault, fade, slideVertical, slideVerticalInverse)
+    //    private val animationsSet = arrayOf(rollInTurnVertical, rollInTurnHorizontal, rollBlindsHorizontalNest,
+//            rollBlindsHorizontalDefault, fade, slideVertical, slideVerticalInverse, slideRight2Left)
+    private val animationsSet = arrayOf(/*rollInTurnVertical, rollInTurnHorizontal,*/ /*rollBlindsHorizontalNest,*/
+            /*rollBlindsHorizontalDefault,*//*fade, slideVerticalInverse, */slideVertical/*slideRight2Left*/)
 
     private var currentAnimation = animationsSet[Random().nextInt(animationsSet.size)]
 

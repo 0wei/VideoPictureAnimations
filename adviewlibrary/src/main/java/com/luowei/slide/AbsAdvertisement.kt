@@ -48,7 +48,7 @@ abstract class AbsAdvertisement : FrameLayout {
         }
     }
 
-    fun clear() {
+    open fun clear() {
     }
 
 

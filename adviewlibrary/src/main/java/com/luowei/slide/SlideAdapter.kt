@@ -154,7 +154,7 @@ class SlideAdapter(fm: FragmentManager, private val viewPager: ISlide) : Fragmen
         Video, Image
     }
 
-    class Item(internal var type: ItemType, internal var path: String, var videoImage: String? = null) {
+    class Item(internal var type: ItemType,  var path: String, var videoImage: String? = null) {
         private val fragment: Fragment? = null
 
         override fun equals(o: Any?): Boolean {

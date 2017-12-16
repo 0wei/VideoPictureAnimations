@@ -34,7 +34,7 @@ class VideoView : TextureView {
         mediaPlayer = MediaPlayer()
         surfaceTextureListener = object : TextureView.SurfaceTextureListener {
             override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
-                mediaPlayer!!.setSurface(Surface(surface))
+                mediaPlayer?.setSurface(Surface(surface))
                 //                mediaPlayer.setDisplay(holder);
                 videoStatus = videoStatus or VIDEO_SURFACE_LOADED
                 try2PlayVideo()
@@ -95,7 +95,7 @@ class VideoView : TextureView {
 //                }
 //            })
 //            alpha.start()
-            Log.d()
+            if (DEBUG)  Log.d()
             mediaPlayer!!.start()
             return true
         }
@@ -109,7 +109,7 @@ class VideoView : TextureView {
         playComplete = false
         videoStatus = videoStatus and VIDEO_ALLOW_PLAY.inv()
         try {
-            Log.d("path=$videoPath")
+            if (DEBUG) Log.d("path=$videoPath")
             mediaPlayer!!.reset()
             mediaPlayer!!.setDataSource(videoPath)
             mediaPlayer!!.setAudioStreamType(AudioManager.STREAM_MUSIC)

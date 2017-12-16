@@ -27,6 +27,16 @@ android {
     lintOptions {
         abortOnError false
     }
+    sourceSets {
+        main {
+            java.srcDirs += 'src/main/java'
+            res.srcDirs += 'src/main/res'
+
+
+            java.srcDirs += 'circleindicator/src/main/java'
+            res.srcDirs += 'circleindicator/src/main/res'
+        }
+    }
 }
 
 dependencies {
@@ -42,7 +52,8 @@ dependencies {
 
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-        compile 'com.github.luv135:Common:-SNAPSHOT'
+    compile 'com.github.luv135:Common:-SNAPSHOT'
+
 //    compile project(':../../Libs/Common:commlib')
 //    compile project(':ThirdOpenSource/Common:commlib')
 //    compile project(':../ThirdOpenSource/Common:commlib')

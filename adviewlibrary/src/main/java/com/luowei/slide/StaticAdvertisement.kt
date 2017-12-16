@@ -5,16 +5,18 @@ import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Handler
 import android.os.Message
-import android.os.Parcelable
 import android.util.AttributeSet
-import android.util.SparseArray
+import android.view.Gravity
+import android.widget.FrameLayout
+import com.unistrong.luowei.adsslidelib.R
 import com.unistrong.luowei.commlib.Log
 import com.unistrong.luowei.kotlin.hide
 import com.unistrong.luowei.kotlin.show
 import java.lang.ref.WeakReference
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Created by luowei on 2017/12/5.
@@ -26,18 +28,34 @@ class StaticAdvertisement : AbsAdvertisement {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
 
     private val DEBUG = false
-    private var timeOut = 2000
+    var timeOut = 3000
+        set(value) {
+            field = Math.max(50, value)
+        }
     var currentIndex = 0
-        private set
-    private val playlist = ArrayList<SlideAdapter.Item>()
+        private set(value) {
+            field = value
+            Log.d("currentIndex=$currentIndex")
+            indicator.onPageSelected(currentIndex)
+        }
+    val playlist = ArrayList<SlideAdapter.Item>()
+
     private var timerHandler: Handler? = MyHandler(this)
 
     private val roll3dContainer = Roll3DContainer(context)
     private val textureView = VideoView(context)
+    private val indicator = CircleIndicator(context)
 
     init {
         addView(textureView)
         addView(roll3dContainer)
+        val layoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+        layoutParams.bottomMargin = 10
+        indicator.setPadding(0,10,0,10)
+        indicator.gravity = Gravity.CENTER_HORIZONTAL
+        indicator.setBackgroundColor(context.resources.getColor(R.color.indicator_background))
+        addView(indicator, layoutParams)
         val listener: AnimatorListenerAdapter = object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
                 updateItem()
@@ -72,20 +90,15 @@ class StaticAdvertisement : AbsAdvertisement {
         }
     }
 
+    override fun clear() {
+        playlist.clear()
+        notifyDataChange()
+    }
 
     override fun addItem(item: SlideAdapter.Item) {
-        super.addItem(item)
-        if (playlist.size == 0) {
-            currentItem = item
-            roll3dContainer.currentBitmap = getImagePath(item)
-            if (currentItem!!.type == SlideAdapter.ItemType.Video) {
-                textureView.initVideoResource(currentItem!!.path)
-                updateItem()
-            }
-            currentIndex++
-        }
+//        super.addItem(item)
         playlist.add(item)
-        slideDelay()
+        notifyDataChange()
     }
 
     private fun slideDelay() {
@@ -104,13 +117,13 @@ class StaticAdvertisement : AbsAdvertisement {
             return
         }
         if (currentItem?.type == SlideAdapter.ItemType.Video && !force) {
-            slideDelay()
+//            slideDelay()
             if (DEBUG) Log.d("wait..")
             return
         }
 
-        if (currentIndex + 1 > playlist.size) currentIndex = 0
-        currentItem = playlist[currentIndex++]
+        if (currentIndex + 1 >= playlist.size) currentIndex = 0 else currentIndex++
+        currentItem = playlist[currentIndex]
 //        roll3dContainer.nextBitmap = getImagePath(currentItem!!)
         if (currentItem!!.type == SlideAdapter.ItemType.Video) {
             textureView.initVideoResource(currentItem!!.path)
@@ -126,7 +139,16 @@ class StaticAdvertisement : AbsAdvertisement {
             else -> item.videoImage
 
         }
-        return BitmapFactory.decodeFile(path)
+        return try {
+            val options = BitmapFactory.Options()
+            options.inPreferredConfig = Bitmap.Config.RGB_565
+            BitmapFactory.decodeFile(path, options)
+            BitmapFactory.decodeFile(path)
+        } catch (e: Exception) {
+            playlist.remove(item)
+            notifyDataChange()
+            null
+        }
 
     }
 
@@ -141,15 +163,33 @@ class StaticAdvertisement : AbsAdvertisement {
     }
 
     internal class MyHandler(pager: StaticAdvertisement) : Handler() {
-        var pager: WeakReference<StaticAdvertisement> = WeakReference(pager)
+        private var pager: WeakReference<StaticAdvertisement> = WeakReference(pager)
 
         override fun handleMessage(msg: Message) {
             pager.get()?.slideNext()
-
         }
     }
 
+    private lateinit var defaultPath: String
+
     override fun setDefaultImageFile(path: String) {
-        roll3dContainer.currentBitmap = BitmapFactory.decodeFile(path)
+        defaultPath = path
+        notifyDataChange()
+    }
+
+    fun notifyDataChange() {
+        if (playlist.size == 1) {
+            val item = playlist[0]
+            currentItem = item
+            roll3dContainer.currentBitmap = getImagePath(item)
+            if (currentItem!!.type == SlideAdapter.ItemType.Video) {
+                textureView.initVideoResource(currentItem!!.path)
+                updateItem()
+            }
+        } else if (playlist.size == 0) {
+            roll3dContainer.currentBitmap = BitmapFactory.decodeFile(defaultPath)
+        }
+        indicator.updateIndicator(playlist.size)
+        slideDelay()
     }
 }
