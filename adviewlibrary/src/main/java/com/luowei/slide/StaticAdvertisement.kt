@@ -35,7 +35,7 @@ class StaticAdvertisement : AbsAdvertisement {
     var currentIndex = 0
         private set(value) {
             field = value
-            Log.d("currentIndex=$currentIndex")
+            if (DEBUG) Log.d("currentIndex=$currentIndex")
             indicator.onPageSelected(currentIndex)
         }
     val playlist = ArrayList<SlideAdapter.Item>()
@@ -52,9 +52,9 @@ class StaticAdvertisement : AbsAdvertisement {
         val layoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
         layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
         layoutParams.bottomMargin = 10
-        indicator.setPadding(0,10,0,10)
+        indicator.setPadding(0, 10, 0, 10)
         indicator.gravity = Gravity.CENTER_HORIZONTAL
-        indicator.setBackgroundColor(context.resources.getColor(R.color.indicator_background))
+//        indicator.setBackgroundColor(context.resources.getColor(R.color.indicator_background))
         addView(indicator, layoutParams)
         val listener: AnimatorListenerAdapter = object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
@@ -129,7 +129,15 @@ class StaticAdvertisement : AbsAdvertisement {
             textureView.initVideoResource(currentItem!!.path)
             updateItem()
         } else {
-            roll3dContainer.nextBitmap = getImagePath(currentItem!!)
+            val bitmap = getImagePath(currentItem!!)
+            if (bitmap == null) {
+                Log.d("${currentItem!!.path} bitmap is empty slide next")
+                playlist.removeAt(currentIndex)
+//                slideNext(true)
+                notifyDataChange()
+            } else {
+                roll3dContainer.nextBitmap = bitmap
+            }
         }
     }
 
