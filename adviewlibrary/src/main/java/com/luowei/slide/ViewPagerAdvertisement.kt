@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.support.v4.app.FragmentManager
 import android.util.AttributeSet
+import android.view.Gravity
 import android.widget.FrameLayout
 import com.unistrong.luowei.adsslidelib.R
 import java.io.File
@@ -21,6 +22,7 @@ class ViewPagerAdvertisement : FrameLayout {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
 
     var viewPager: SlideViewPager = SlideViewPager(context)
+    private val indicator = CircleIndicator(context)
     lateinit var adapter: SlideAdapter
     val DEFAULT_IMAGE: String
     var workHandler: Handler
@@ -29,6 +31,17 @@ class ViewPagerAdvertisement : FrameLayout {
     init {
         viewPager.id = R.id.advertisementViewPager
         addView(viewPager)
+        val layoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+        layoutParams.bottomMargin = 10
+        indicator.setPadding(0, 10, 0, 10)
+        indicator.gravity = Gravity.CENTER_HORIZONTAL
+//        indicator.setBackgroundColor(context.resources.getColor(R.color.indicator_background))
+//        addView(indicator, layoutParams)
+
+
+        viewPager
+
         val file = File(BASEPATH, "ADS_DEFAULT.jpg")
         DEFAULT_IMAGE = file.absolutePath
         if (!file.exists()) {

@@ -23,7 +23,7 @@ class CircleIndicator(context: Context?) : LinearLayout(context) {
     fun updateIndicator(count: Int) {
         if (childCount < count) {
             for (i in 0 until count - childCount) {
-                Log.d("i = $i")
+//                Log.d("i = $i")
                 val view = ImageView(context)
                 view.setImageResource(R.drawable.white_radius)
                 addView(view)

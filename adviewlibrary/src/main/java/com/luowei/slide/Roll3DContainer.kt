@@ -353,8 +353,7 @@ class Roll3DContainer : View {
 
     //    private val animationsSet = arrayOf(rollInTurnVertical, rollInTurnHorizontal, rollBlindsHorizontalNest,
 //            rollBlindsHorizontalDefault, fade, slideVertical, slideVerticalInverse, slideRight2Left)
-    private val animationsSet = arrayOf(/*rollInTurnVertical, rollInTurnHorizontal,*/ /*rollBlindsHorizontalNest,*/
-            /*rollBlindsHorizontalDefault,*//*fade, slideVerticalInverse, */slideVertical/*slideRight2Left*/)
+    private val animationsSet = arrayOf(slideRight2Left)
 
     private var currentAnimation = animationsSet[Random().nextInt(animationsSet.size)]
 
