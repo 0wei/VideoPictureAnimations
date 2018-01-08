@@ -8,7 +8,7 @@ import android.graphics.*
 import android.support.annotation.IntRange
 import android.util.AttributeSet
 import android.view.View
-import android.view.animation.DecelerateInterpolator
+import com.bumptech.glide.Glide
 import com.unistrong.luowei.commlib.Log
 import java.util.*
 
@@ -30,11 +30,17 @@ class Roll3DContainer : View {
     var currentBitmap: Bitmap? = null
         get() {
             if (field == null) return null
-            if ((field?.width != width || field?.height != height) && width > 0 && height > 0)
-                field = Bitmap.createScaledBitmap(field, width, height, true)
+            if ((field?.width != width || field?.height != height) && width > 0 && height > 0) {
+                val t = field!!
+                field = Bitmap.createScaledBitmap(t, width, height, true)
+                t.recycle()
+//                field = Glide.with(this).asBitmap().load(field).preload()
+//                        .submit(width, height).get()
+            }
             return field
         }
         set(value) {
+            field?.recycle()
             field = value
             currentValue = 0
             invalidate()
@@ -42,14 +48,20 @@ class Roll3DContainer : View {
 
     var nextBitmap: Bitmap? = null
         set(value) {
+//            currentBitmap = field
+//            field?.recycle()
             field = value
             currentAnimation = animationsSet[Random().nextInt(animationsSet.size)]
             startAnimation()
         }
         get() {
             if (field == null) return null
-            if ((field?.width != width || field?.height != height) && width > 0 && height > 0)
-                field = Bitmap.createScaledBitmap(field, width, height, true)
+            if ((field?.width != width || field?.height != height) && width > 0 && height > 0) {
+                val t = field!!
+                field = Bitmap.createScaledBitmap(t, width, height, true)
+                t.recycle()
+//                field = Glide.with(this).asBitmap().load(field).submit(width, height).get()
+            }
             return field
         }
     //[0,100]
@@ -65,7 +77,7 @@ class Roll3DContainer : View {
         currentValue = 0
         valueAnimator?.cancel()
         valueAnimator = ValueAnimator.ofInt(0, 100)
-        valueAnimator!!.duration = 500
+        valueAnimator!!.duration = 1000
 //        valueAnimator!!.interpolator = DecelerateInterpolator()
         valueAnimator!!.addUpdateListener(updateListener)
         valueAnimator!!.addListener(toPreAnimListener)
@@ -137,7 +149,6 @@ class Roll3DContainer : View {
             bitMatrix.postTranslate(size / 2f + left, tAxisY)
             canvas.concat(bitMatrix)
             if (nextBitmap != null) {
-
                 canvas.drawBitmap(nextBitmap, rect, dstRect, null)
             }
             canvas.restore()
@@ -351,9 +362,9 @@ class Roll3DContainer : View {
         }
     }
 
-    //    private val animationsSet = arrayOf(rollInTurnVertical, rollInTurnHorizontal, rollBlindsHorizontalNest,
-//            rollBlindsHorizontalDefault, fade, slideVertical, slideVerticalInverse, slideRight2Left)
-    private val animationsSet = arrayOf(slideRight2Left)
+    private val animationsSet = arrayOf(rollInTurnVertical, rollInTurnHorizontal, rollBlindsHorizontalNest,
+            rollBlindsHorizontalDefault, fade, slideVertical, slideVerticalInverse, slideRight2Left)
+//    private val animationsSet = arrayOf(slideRight2Left)
 
     private var currentAnimation = animationsSet[Random().nextInt(animationsSet.size)]
 
@@ -371,10 +382,6 @@ class Roll3DContainer : View {
 //        postInvalidate()
     }
 
-
-    private fun pixSectorHorizontal(canvas: Canvas) {
-        canvas.drawBitmap(nextBitmap, 0f, 0f, null)
-    }
 
     fun setProgress(@IntRange(from = 0, to = 100) progress: Int) {
         currentValue = progress

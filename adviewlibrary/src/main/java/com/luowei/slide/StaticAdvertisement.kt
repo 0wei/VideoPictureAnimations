@@ -11,6 +11,7 @@ import android.os.Message
 import android.util.AttributeSet
 import android.view.Gravity
 import android.widget.FrameLayout
+import com.bumptech.glide.Glide
 import com.unistrong.luowei.adsslidelib.R
 import com.unistrong.luowei.commlib.Log
 import com.unistrong.luowei.kotlin.hide
@@ -42,7 +43,7 @@ class StaticAdvertisement : AbsAdvertisement {
 
     private var timerHandler: Handler? = MyHandler(this)
 
-    private val roll3dContainer = Roll3DContainer(context)
+    val roll3dContainer = Roll3DContainer(context)
     private val textureView = VideoView(context)
     private val indicator = CircleIndicator(context)
 
@@ -131,7 +132,7 @@ class StaticAdvertisement : AbsAdvertisement {
         } else {
             val bitmap = getImagePath(currentItem!!)
             if (bitmap == null) {
-                Log.d("${currentItem!!.path} bitmap is empty slide next")
+                Log.d("${currentItem!!.path} bitmap is empty slide next(${playlist.size})")
                 playlist.removeAt(currentIndex)
 //                slideNext(true)
                 notifyDataChange()
@@ -148,13 +149,16 @@ class StaticAdvertisement : AbsAdvertisement {
 
         }
         return try {
-            val options = BitmapFactory.Options()
-            options.inPreferredConfig = Bitmap.Config.RGB_565
-            BitmapFactory.decodeFile(path, options)
+//            val options = BitmapFactory.Options()
+//            options.inMutable = true
+//            options.inPreferredConfig = Bitmap.Config.RGB_565
+//            BitmapFactory.decodeFile(path, options)
+//            Glide.with(this).asBitmap().load(path).submit().get()
             BitmapFactory.decodeFile(path)
         } catch (e: Exception) {
-            playlist.remove(item)
-            notifyDataChange()
+            Log.e(e.localizedMessage)
+//            playlist.remove(item)
+//            notifyDataChange()
             null
         }
 

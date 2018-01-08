@@ -1,6 +1,7 @@
 package com.luowei.slide
 
 import android.content.Context
+import android.util.AttributeSet
 import android.widget.ImageView
 import android.widget.LinearLayout
 import com.unistrong.luowei.adsslidelib.R
@@ -9,7 +10,11 @@ import com.unistrong.luowei.commlib.Log
 /**
  * Created by luowei on 2017/12/16.
  */
-class CircleIndicator(context: Context?) : LinearLayout(context) {
+class CircleIndicator : LinearLayout {
+    constructor(context: Context?) : super(context)
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
 
     init {
         orientation = HORIZONTAL
