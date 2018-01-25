@@ -16,8 +16,8 @@ import java.lang.ref.WeakReference
  */
 class SlideViewPager : ViewPager, ISlide {
 
-    constructor(context: Context?) : super(context)
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
 
     private var timerHandler: Handler? = null
     private var timeOut = 5000
@@ -91,7 +91,7 @@ class SlideViewPager : ViewPager, ISlide {
         replayListener = null  //// TODO: 2016/10/17 不置为空,会导致创建一个新的该对象此处有应用
     }
 
-    override fun setAdapter(adapter: PagerAdapter) {
+    override fun setAdapter(adapter: PagerAdapter?) {
         if (adapter !is SlideAdapter) {
             throw IllegalArgumentException("just SlideAdapter support")
         }
@@ -128,7 +128,7 @@ class SlideViewPager : ViewPager, ISlide {
             if (DEBUG) Log.e("can't slide ,wait moment")
             return false
         }
-        val count = adapter.count
+        val count = adapter!!.count
         if (count < 2) {
             isAutoSlideRun = false
             if (replayListener != null) {

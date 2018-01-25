@@ -66,8 +66,8 @@ repositories {
 //e4e784cd2c9abc51978151d6a14f1d5422fdbdd8
 
 task publishRelease(dependsOn: 'assembleRelease') << {
-    def today = new Date().format('yyyyMMdd');
-    def id = android.defaultConfig.applicationId
+//    def today = new Date().format('yyyyMMdd');
+//    def id = android.defaultConfig.applicationId
 //    def prex = id.substring(id.lastIndexOf(".") + 1)
     /* copy {
          from('build/outputs/aar/')

@@ -27,7 +27,7 @@ class ImageShowFragment : Fragment(), ISlide.SlideItem {
 
     private var imageIndex = 0
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater!!.inflate(R.layout.slide_fragment_image_show, container, false)
         imageView = view.findViewById<Roll3DContainer>(R.id.ads_image_imageView_slide)
@@ -37,8 +37,8 @@ class ImageShowFragment : Fragment(), ISlide.SlideItem {
                 Handler().post { viewPager?.requestSlideNext(true, false) }
             }
         }
-        imagePath = arguments.getString(PATH)
-        images = arguments.getStringArray(IMAGES_ARRAY)
+        imagePath = arguments!!.getString(PATH)
+        images = arguments!!.getStringArray(IMAGES_ARRAY)
         return view
     }
 
@@ -47,7 +47,7 @@ class ImageShowFragment : Fragment(), ISlide.SlideItem {
     }
 
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         imageView.currentBitmap = BitmapFactory.decodeFile(images[imageIndex%images.size])
     }
@@ -58,7 +58,7 @@ class ImageShowFragment : Fragment(), ISlide.SlideItem {
         if (imageIndex >= images.size) {
             return true
         }
-        if(viewPager!!.adapter.count>1)
+        if(viewPager!!.adapter!!.count>1)
         imageView.nextBitmap = BitmapFactory.decodeFile(images[imageIndex])
         return false
     }

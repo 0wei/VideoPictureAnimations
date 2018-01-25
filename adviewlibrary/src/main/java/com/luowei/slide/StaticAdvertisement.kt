@@ -28,7 +28,7 @@ class StaticAdvertisement : AbsAdvertisement {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
 
-    private val DEBUG = false
+    private val DEBUG = true
     var timeOut = 3000
         set(value) {
             field = Math.max(50, value)
@@ -36,7 +36,7 @@ class StaticAdvertisement : AbsAdvertisement {
     var currentIndex = 0
         private set(value) {
             field = value
-            if (DEBUG) Log.d("currentIndex=$currentIndex")
+//            if (DEBUG) Log.d("currentIndex=$currentIndex")
             indicator.onPageSelected(currentIndex)
         }
     val playlist = ArrayList<SlideAdapter.Item>()
@@ -146,19 +146,20 @@ class StaticAdvertisement : AbsAdvertisement {
         val path = when (item.type) {
             SlideAdapter.ItemType.Image -> item.path
             else -> item.videoImage
-
         }
         return try {
+            Log.d("path=$path")
 //            val options = BitmapFactory.Options()
 //            options.inMutable = true
-//            options.inPreferredConfig = Bitmap.Config.RGB_565
+//            options.inBitmap = bitmap
 //            BitmapFactory.decodeFile(path, options)
 //            Glide.with(this).asBitmap().load(path).submit().get()
-            BitmapFactory.decodeFile(path)
+//            Glide.with(this)
+//            BitmapFactory.decodeFile(path)
+            path ?: return null
+            return BitmapLoader.loadBitmap(path, width, height)
         } catch (e: Exception) {
             Log.e(e.localizedMessage)
-//            playlist.remove(item)
-//            notifyDataChange()
             null
         }
 

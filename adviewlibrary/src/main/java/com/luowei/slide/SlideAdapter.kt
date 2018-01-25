@@ -45,7 +45,7 @@ class SlideAdapter(fm: FragmentManager, private val viewPager: ISlide) : Fragmen
         notifyDataSetChanged()
     }
 
-    override fun setPrimaryItem(container: ViewGroup?, position: Int, objecz: Any) {
+    override fun setPrimaryItem(container: ViewGroup, position: Int, objecz: Any) {
         super.setPrimaryItem(container, position, objecz)
         val fragment = objecz as Fragment
         currentFragment = fragment

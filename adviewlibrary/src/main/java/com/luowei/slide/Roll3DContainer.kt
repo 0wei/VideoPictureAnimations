@@ -19,6 +19,7 @@ class Roll3DContainer : View {
 
     companion object {
         private val DEBUG = false
+        private var index = 0
     }
 
     constructor(context: Context?) : super(context)
@@ -28,42 +29,51 @@ class Roll3DContainer : View {
 
 
     var currentBitmap: Bitmap? = null
-        get() {
-            if (field == null) return null
-            if ((field?.width != width || field?.height != height) && width > 0 && height > 0) {
-                val t = field!!
-                field = Bitmap.createScaledBitmap(t, width, height, true)
-                t.recycle()
-//                field = Glide.with(this).asBitmap().load(field).preload()
-//                        .submit(width, height).get()
-            }
-            return field
-        }
+//        get() {
+//            if (field == null) return null
+//            if ((field?.width != width || field?.height != height) && width > 0 && height > 0) {
+//                val t = field!!
+//                field = Bitmap.createScaledBitmap(t, width, height, true)
+//                t.recycle()
+////                field = Glide.with(this).asBitmap().load(field).preload()
+////                        .submit(width, height).get()
+//            }
+//            return field
+//        }
         set(value) {
-            field?.recycle()
             field = value
+            if (field != null && field!!.isMutable && (field?.width != width || field?.height != height) && width > 0 && height > 0) {
+                field = Bitmap.createScaledBitmap(field, width, height, false)
+            }
             currentValue = 0
             invalidate()
+//            postInvalidate()
         }
 
     var nextBitmap: Bitmap? = null
         set(value) {
-//            currentBitmap = field
-//            field?.recycle()
+            currentBitmap = field
             field = value
-            currentAnimation = animationsSet[Random().nextInt(animationsSet.size)]
+            if (field != null && field!!.isMutable && (field?.width != width || field?.height != height) && width > 0 && height > 0) {
+                field = Bitmap.createScaledBitmap(field, width, height, false)
+
+            }
+            val nextInt = Random().nextInt(animationsSet.size)
+//            val nextInt = index++ % animationsSet.size
+            currentAnimation = animationsSet[nextInt]
+//            Log.d("animation= $nextInt")
             startAnimation()
         }
-        get() {
-            if (field == null) return null
-            if ((field?.width != width || field?.height != height) && width > 0 && height > 0) {
-                val t = field!!
-                field = Bitmap.createScaledBitmap(t, width, height, true)
-                t.recycle()
+//        get() {
+//            if (field == null) return null
+//            if ((field?.width != width || field?.height != height) && width > 0 && height > 0) {
+//                val t = field!!
+//                field = Bitmap.createScaledBitmap(t, width, height, true)
+//                t.recycle()
 //                field = Glide.with(this).asBitmap().load(field).submit(width, height).get()
-            }
-            return field
-        }
+//            }
+//            return field
+//        }
     //[0,100]
     private var currentValue = 0
         set(value) {
@@ -94,7 +104,7 @@ class Roll3DContainer : View {
     private val toPreAnimListener = object : AnimatorListenerAdapter() {
         override fun onAnimationEnd(animation: Animator) {
             super.onAnimationEnd(animation)
-            currentBitmap = nextBitmap
+            currentBitmap = Bitmap.createBitmap(nextBitmap)
             listener?.onAnimationEnd(animation)
         }
     }
@@ -111,47 +121,45 @@ class Roll3DContainer : View {
         var right = 0f
         for (i in 0..count) {
             var tDegree = currentValue * percent - i * degree.toFloat()
-            if (tDegree < 0)
-                tDegree = 0f
-            if (tDegree > 90)
-                tDegree = 90f
-            camera.save()
-
-            camera.rotateX((-tDegree))
-            camera.getMatrix(bitMatrix)
-
-            camera.restore()
-            canvas.save()
+            if (tDegree < 0) tDegree = 0f
+            if (tDegree > 90) tDegree = 90f
             var tAxisY = tDegree / 90f * height
-            if (tAxisY > height)
-                tAxisY = height.toFloat()
-            if (tAxisY < 0)
-                tAxisY = 0f
-
-            bitMatrix.preTranslate(-size / 2f, 0f)
-            bitMatrix.postTranslate(size / 2f + left, tAxisY)
-            canvas.concat(bitMatrix)
+            if (tAxisY > height) tAxisY = height.toFloat()
+            if (tAxisY < 0) tAxisY = 0f
             right += size
             val rect = Rect(left, 0, right.toInt(), height)
             val dstRect = Rect(0, 0, rect.width(), height)
+
             if (currentBitmap != null) {
+                camera.save()
+                camera.rotateX((-tDegree))
+                camera.getMatrix(bitMatrix)
+                camera.restore()
+                bitMatrix.preTranslate(-size / 2f, 0f)
+                bitMatrix.postTranslate(size / 2f + left, tAxisY)
+
+
+                canvas.save()
+                canvas.concat(bitMatrix)
                 canvas.drawBitmap(currentBitmap, rect, dstRect, null)
+                canvas.restore()
             }
-            canvas.restore()
 
 
-            camera.save()
-            camera.rotateX((90 - tDegree))
-            camera.getMatrix(bitMatrix)
-            camera.restore()
-            canvas.save()
-            bitMatrix.preTranslate(-size / 2f, -height.toFloat())
-            bitMatrix.postTranslate(size / 2f + left, tAxisY)
-            canvas.concat(bitMatrix)
             if (nextBitmap != null) {
+                camera.save()
+                camera.rotateX((90 - tDegree))
+                camera.getMatrix(bitMatrix)
+                camera.restore()
+                canvas.save()
+                bitMatrix.preTranslate(-size / 2f, -height.toFloat())
+                bitMatrix.postTranslate(size / 2f + left, tAxisY)
+
+
+                canvas.concat(bitMatrix)
                 canvas.drawBitmap(nextBitmap, rect, dstRect, null)
+                canvas.restore()
             }
-            canvas.restore()
             left = right.toInt()
         }
     }
@@ -292,20 +300,47 @@ class Roll3DContainer : View {
     private val fade = { canvas: Canvas ->
         if (currentBitmap != null) {
             paint.alpha = ((100 - currentValue) * 2.55).toInt()
-            canvas.drawBitmap(currentBitmap, 0f, 0f, paint)
+            val matrix = Matrix()
+
+//            matrix.postScale(width / currentBitmap!!.width.toFloat(), height / currentBitmap!!.height.toFloat(), width / 2f, height / 2f)
+            matrix.postScale(width / currentBitmap!!.width.toFloat(), height / currentBitmap!!.height.toFloat())
+//            canvas.drawBitmap(currentBitmap, 0f, 0f, paint)
+            canvas.drawBitmap(currentBitmap, matrix, paint)
+            paint.alpha=255
         }
         if (nextBitmap != null) {
             paint.alpha = ((currentValue) * 2.55).toInt()
-            canvas.drawBitmap(nextBitmap, 0f, 0f, paint)
+            val matrix = Matrix()
+            matrix.postScale(width / nextBitmap!!.width.toFloat(), height / nextBitmap!!.height.toFloat())
+//            canvas.drawBitmap(nextBitmap, 0f, 0f, paint)
+            canvas.drawBitmap(nextBitmap, matrix, paint)
+            paint.alpha=255
         }
     }
 
     private val slideRight2Left = { canvas: Canvas ->
+//        canvas.drawColor(Color.RED)
         if (currentBitmap != null) {
-            canvas.drawBitmap(currentBitmap, -width * currentValue / 100f, 0f, paint)
+//            val matrix = Matrix()
+//            val bitmap = currentBitmap
+//            matrix.postScale(width / bitmap!!.width.toFloat(), height / bitmap!!.height.toFloat())
+//            canvas.save()
+//            canvas.concat(matrix)
+//            canvas.drawBitmap(currentBitmap, -bitmap!!.width * currentValue / 100f, 0f, paint)
+//            canvas.restore()
+            canvas.drawBitmap(currentBitmap, -width * currentValue / 100f/2, 0f, paint)
+
         }
         if (nextBitmap != null) {
+//            val matrix = Matrix()
+//            val bitmap = nextBitmap
+//            matrix.postScale(width / bitmap!!.width.toFloat(), height / bitmap!!.height.toFloat())
+//            canvas.save()
+//            canvas.concat(matrix)
+//            canvas.drawBitmap(nextBitmap, bitmap!!.width * (100 - currentValue) / 100f, 0f, paint)
+//            canvas.restore()
             canvas.drawBitmap(nextBitmap, width * (100 - currentValue) / 100f, 0f, paint)
+
         }
     }
 
@@ -363,14 +398,16 @@ class Roll3DContainer : View {
     }
 
     private val animationsSet = arrayOf(rollInTurnVertical, rollInTurnHorizontal, rollBlindsHorizontalNest,
-            rollBlindsHorizontalDefault, fade, slideVertical, slideVerticalInverse, slideRight2Left)
+            rollBlindsHorizontalDefault, fade, slideRight2Left, slideVertical, slideVerticalInverse)
+//    private val animationsSet = arrayOf(rollBlindsHorizontalNest)
 //    private val animationsSet = arrayOf(slideRight2Left)
 
     private var currentAnimation = animationsSet[Random().nextInt(animationsSet.size)]
 
     override fun onDraw(canvas: Canvas) {
-//        if(DEBUG)Log.d("currentValue=$currentValue")
+        if(DEBUG)Log.d("currentValue=$currentValue")
         currentAnimation.invoke(canvas)
+
 //        rollBlindsHorizontal(canvas,false)
 //        rollInTurnHorizontal(canvas)
 //        slide(canvas,false)

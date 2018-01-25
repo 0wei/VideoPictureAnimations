@@ -63,7 +63,7 @@ class VideoFragment : Fragment(), ISlide.SlideItem {
 
     private var current: String? = null
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater!!.inflate(R.layout.slide_fragment_slide_video, container, false)
         textureView = view.findViewById<TextureView>(R.id.ads_slide_video_textureView) as TextureView
@@ -239,7 +239,7 @@ class VideoFragment : Fragment(), ISlide.SlideItem {
     }
 
     private fun transitionAnimation() {
-        if (nextImagePath != null && viewPager?.scrollIdle == true&&viewPager!!.adapter.count>1) {
+        if (nextImagePath != null && viewPager?.scrollIdle == true&&viewPager!!.adapter!!.count>1) {
             imageView.currentBitmap = getBitmap()
             imageView.visibility = View.VISIBLE
             textureView.visibility=View.INVISIBLE

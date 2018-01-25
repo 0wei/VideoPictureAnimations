@@ -27,7 +27,7 @@ class VideoView : TextureView {
     private val VIDEO_ERROR = BASE shl 2
     private val VIDEO_ALLOW_PLAY = BASE shl 3
     var listener: (() -> Unit?)? = null
-    private val DEBUG = false
+    private val DEBUG = true
 
     init {
 //        isDrawingCacheEnabled = true
@@ -120,14 +120,8 @@ class VideoView : TextureView {
                 if (DEBUG) Log.d("on prepared")
             }
             mediaPlayer!!.setOnCompletionListener {
-                //                if (!slideNext()) { //请求滑动到下一页失败,则尝试再次播放视频
-//                    try2PlayVideo()
-//                } else {
-//                    if (DEBUG) Log.d("viewPager to next ok")
-//                }
                 if (DEBUG) Log.d("completion")
                 playDone()
-
             }
             mediaPlayer!!.setOnErrorListener { mp, what, extra ->
                 playDone()
