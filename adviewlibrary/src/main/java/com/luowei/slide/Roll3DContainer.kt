@@ -52,7 +52,6 @@ class Roll3DContainer : View {
 
     var nextBitmap: Bitmap? = null
         set(value) {
-            currentBitmap = field
             field = value
             if (field != null && field!!.isMutable && (field?.width != width || field?.height != height) && width > 0 && height > 0) {
                 field = Bitmap.createScaledBitmap(field, width, height, false)
@@ -104,7 +103,7 @@ class Roll3DContainer : View {
     private val toPreAnimListener = object : AnimatorListenerAdapter() {
         override fun onAnimationEnd(animation: Animator) {
             super.onAnimationEnd(animation)
-            currentBitmap = Bitmap.createBitmap(nextBitmap)
+            currentBitmap = nextBitmap
             listener?.onAnimationEnd(animation)
         }
     }

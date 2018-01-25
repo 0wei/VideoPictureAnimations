@@ -64,11 +64,24 @@ class StaticAdvertisement : AbsAdvertisement {
         }
         roll3dContainer.listener = listener
         textureView.listener = {
-            if (DEBUG) Log.d("play ok")
-            roll3dContainer.currentBitmap = textureView.bitmap
-            roll3dContainer.show()
-            textureView.hide()
-            slideNext(true)
+            if (it == VideoView.ListenState.End) {
+                if (DEBUG) Log.d("play ok")
+                roll3dContainer.currentBitmap = textureView.bitmap
+                roll3dContainer.show()
+                textureView.hide()
+                slideNext(true)
+            } else{
+                val alpha = roll3dContainer.animate().alpha(0f)
+                alpha.duration = 1000
+                alpha.setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator?) {
+                        super.onAnimationEnd(animation)
+                        roll3dContainer.hide()
+                        roll3dContainer.alpha = 1f
+                    }
+                })
+                alpha.start()
+            }
         }
     }
 
@@ -78,16 +91,16 @@ class StaticAdvertisement : AbsAdvertisement {
             slideDelay()
         } else {
             textureView.play()
-            val alpha = roll3dContainer.animate().alpha(0f)
-            alpha.duration = 1000
-            alpha.setListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator?) {
-                    super.onAnimationEnd(animation)
-                    roll3dContainer.hide()
-                    roll3dContainer.alpha = 1f
-                }
-            })
-            alpha.start()
+//            val alpha = roll3dContainer.animate().alpha(0f)
+//            alpha.duration = 1000
+//            alpha.setListener(object : AnimatorListenerAdapter() {
+//                override fun onAnimationEnd(animation: Animator?) {
+//                    super.onAnimationEnd(animation)
+//                    roll3dContainer.hide()
+//                    roll3dContainer.alpha = 1f
+//                }
+//            })
+//            alpha.start()
         }
     }
 

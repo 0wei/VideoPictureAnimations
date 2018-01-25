@@ -68,9 +68,11 @@ class MainActivity : AppCompatActivity() {
 //        advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/ad/adv2.png"))
 //        advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/ad/adv3.png"))
 //        advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/2h/1.jpg"))
-//        advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/2h/2.jpg"))
-//        advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/2h/3.jpg"))
+        advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/2h/2.jpg"))
         advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Video, "/sdcard/1.mp4"))
+        advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/2h/3.jpg"))
+        advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Video, "/sdcard/2.mp4"))
+
 //        advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Video, "/sdcard/2.mp4"))
     }
 }
