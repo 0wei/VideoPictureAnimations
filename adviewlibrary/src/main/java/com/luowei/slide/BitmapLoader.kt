@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.LruCache
-import com.unistrong.luowei.commlib.Log
 import java.lang.ref.SoftReference
 import java.util.*
 
@@ -44,7 +43,7 @@ object BitmapLoader {
         //BEGIN_INCLUDE(get_bitmap_from_reusable_set)
         var bitmap: Bitmap? = null
 
-        if (mReusableBitmaps != null && !mReusableBitmaps.isEmpty()) {
+        if (!mReusableBitmaps.isEmpty()) {
             synchronized(mReusableBitmaps, {
                 val iterator = mReusableBitmaps.iterator()
                 var item: Bitmap?
@@ -52,7 +51,7 @@ object BitmapLoader {
                 while (iterator.hasNext()) {
                     item = iterator.next().get()
 
-                    if (null != item && item!!.isMutable) {
+                    if (null != item && item.isMutable) {
                         // Check to see it the item can be used for inBitmap
                         if (canUseForInBitmap(item, options)) {
                             bitmap = item
@@ -73,7 +72,7 @@ object BitmapLoader {
         //END_INCLUDE(get_bitmap_from_reusable_set)
     }
 
-    fun hasKitKat(): Boolean {
+    private fun hasKitKat(): Boolean {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
     }
 
@@ -166,7 +165,7 @@ object BitmapLoader {
         }
     }
 
-    fun decodeSampledBitmapFromFile(file: String, reqWidth: Int, reqHeight: Int): Bitmap {
+    private fun decodeSampledBitmapFromFile(file: String, reqWidth: Int, reqHeight: Int): Bitmap {
         // First decode with inJustDecodeBounds=true to check dimensions
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true

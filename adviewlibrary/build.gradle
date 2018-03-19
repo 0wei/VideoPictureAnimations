@@ -54,7 +54,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.github.luv135:Common:-SNAPSHOT'
     compile 'com.google.android.exoplayer:exoplayer:2.6.1'
-//    compile project(':../../Libs/Common:commlib')
+//    compile 'com.github.luv135:Common:-SNAPSHOT'
 //    compile project(':ThirdOpenSource/Common:commlib')
 //    compile project(':../ThirdOpenSource/Common:commlib')
 //    compile 'com.github.luv135:Common:v1.0'

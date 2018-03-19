@@ -28,7 +28,7 @@ class StaticAdvertisement : AbsAdvertisement {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
 
-    private val DEBUG = true
+    private val DEBUG = false
     var timeOut = 3000
         set(value) {
             field = Math.max(50, value)
@@ -161,7 +161,7 @@ class StaticAdvertisement : AbsAdvertisement {
             else -> item.videoImage
         }
         return try {
-            Log.d("path=$path")
+//            Log.d("path=$path")
 //            val options = BitmapFactory.Options()
 //            options.inMutable = true
 //            options.inBitmap = bitmap
