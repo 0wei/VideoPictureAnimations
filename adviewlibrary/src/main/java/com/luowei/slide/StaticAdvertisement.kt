@@ -30,9 +30,9 @@ class StaticAdvertisement : AbsAdvertisement {
 
     private val DEBUG = false
     var timeOut = 3000
-        set(value) {
-            field = Math.max(50, value)
-        }
+    //        set(value) {
+//            field = Math.max(50, value)
+//        }
     var currentIndex = 0
         private set(value) {
             field = value
@@ -70,7 +70,7 @@ class StaticAdvertisement : AbsAdvertisement {
                 roll3dContainer.show()
                 textureView.hide()
                 slideNext(true)
-            } else{
+            } else {
                 val alpha = roll3dContainer.animate().alpha(0f)
                 alpha.duration = 1000
                 alpha.setListener(object : AnimatorListenerAdapter() {
@@ -203,8 +203,8 @@ class StaticAdvertisement : AbsAdvertisement {
         notifyDataChange()
     }
 
-    fun notifyDataChange() {
-        if (playlist.size == 1) {
+    fun notifyDataChange(updateNow: Boolean = false) {
+        if (playlist.size == 1 /*|| roll3dContainer.currentBitmap == null*/) {
             val item = playlist[0]
             currentItem = item
             roll3dContainer.currentBitmap = getImagePath(item)
@@ -216,6 +216,9 @@ class StaticAdvertisement : AbsAdvertisement {
             roll3dContainer.currentBitmap = BitmapFactory.decodeFile(defaultPath)
         }
         indicator.updateIndicator(playlist.size)
-        slideDelay()
+        if (updateNow) {
+            slideNext(true)
+        } else slideDelay()
+//        slideDelay()
     }
 }
