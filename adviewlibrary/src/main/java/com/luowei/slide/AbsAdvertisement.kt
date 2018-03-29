@@ -21,7 +21,7 @@ abstract class AbsAdvertisement : FrameLayout {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
 
     val DEFAULT_IMAGE: String
-    var workHandler: Handler
+//    var workHandler: Handler
     private val BASEPATH = context.getExternalFilesDir("Advertisement").absolutePath
 
     init {
@@ -30,21 +30,22 @@ abstract class AbsAdvertisement : FrameLayout {
         if (!file.exists()) {
             context.resources.openRawResource(R.raw.ads).copyTo(FileOutputStream(file))
         }
-        val handlerThread = HandlerThread("AdvertisementVideoToImageThread")
-        handlerThread.start()
-        workHandler = Handler(handlerThread.looper)
+//        val handlerThread = HandlerThread("AdvertisementVideoToImageThread")
+//        handlerThread.start()
+//        workHandler = Handler(handlerThread.looper)
     }
+
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        workHandler.looper.quit()
+//        workHandler.looper.quit()
     }
 
 
     open fun addItem(item: SlideAdapter.Item) {
         if (item.type == SlideAdapter.ItemType.Video) {
             item.videoImage = File(BASEPATH, File(item.path).name).absolutePath
-            workHandler.post { VideoToImage.saveImage(context, item.path, item.videoImage!!) }
+//            workHandler.post { VideoToImage.saveImage(context, item.path, item.videoImage!!) }
         }
     }
 
