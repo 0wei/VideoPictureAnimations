@@ -5,14 +5,11 @@ import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.os.Handler
 import android.os.Message
 import android.util.AttributeSet
 import android.view.Gravity
 import android.widget.FrameLayout
-import com.bumptech.glide.Glide
-import com.unistrong.luowei.adsslidelib.R
 import com.unistrong.luowei.commlib.Log
 import com.unistrong.luowei.kotlin.hide
 import com.unistrong.luowei.kotlin.show
@@ -28,11 +25,9 @@ class StaticAdvertisement : AbsAdvertisement {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
 
-    private val DEBUG = false
+    private val DEBUG = true
     var timeOut = 3000
-    //        set(value) {
-//            field = Math.max(50, value)
-//        }
+
     var currentIndex = 0
         private set(value) {
             field = value
@@ -44,11 +39,11 @@ class StaticAdvertisement : AbsAdvertisement {
     private var timerHandler: Handler? = MyHandler(this)
 
     val roll3dContainer = Roll3DContainer(context)
-    private val textureView = VideoView(context)
+    private val videoView = VideoView(context)
     private val indicator = CircleIndicator(context)
 
     init {
-        addView(textureView)
+        addView(videoView)
         addView(roll3dContainer)
         val layoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
         layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
@@ -63,12 +58,12 @@ class StaticAdvertisement : AbsAdvertisement {
             }
         }
         roll3dContainer.listener = listener
-        textureView.listener = {
+        videoView.listener = {
             if (it == VideoView.ListenState.End) {
                 if (DEBUG) Log.d("play ok")
-                roll3dContainer.currentBitmap = textureView.bitmap
+                roll3dContainer.currentBitmap = videoView.bitmap
                 roll3dContainer.show()
-                textureView.hide()
+                videoView.hide()
                 slideNext(true)
             } else {
                 val alpha = roll3dContainer.animate().alpha(0f)
@@ -90,7 +85,7 @@ class StaticAdvertisement : AbsAdvertisement {
         if (currentItem!!.type == SlideAdapter.ItemType.Image) {
             slideDelay()
         } else {
-            textureView.play()
+            videoView.play()
 //            val alpha = roll3dContainer.animate().alpha(0f)
 //            alpha.duration = 1000
 //            alpha.setListener(object : AnimatorListenerAdapter() {
@@ -106,7 +101,7 @@ class StaticAdvertisement : AbsAdvertisement {
 
     override fun clear() {
         playlist.clear()
-        notifyDataChange()
+        notifyDataChange(true)
     }
 
     override fun addItem(item: SlideAdapter.Item) {
@@ -128,26 +123,27 @@ class StaticAdvertisement : AbsAdvertisement {
             if (currentItem?.type == SlideAdapter.ItemType.Video) {
                 updateItem()
             }
-            return
+            if (!force) return
         }
-        if (currentItem?.type == SlideAdapter.ItemType.Video && !force) {
-//            slideDelay()
+        if (currentItem?.type == SlideAdapter.ItemType.Video) {
             if (DEBUG) Log.d("wait..")
-            return
+            if (force) {
+                roll3dContainer.show()
+                videoView.stop()
+            } else return
         }
 
         if (currentIndex + 1 >= playlist.size) currentIndex = 0 else currentIndex++
-        currentItem = playlist[currentIndex]
+        currentItem = playlist.getOrNull(currentIndex) ?: return
 //        roll3dContainer.nextBitmap = getImagePath(currentItem!!)
         if (currentItem!!.type == SlideAdapter.ItemType.Video) {
-            textureView.initVideoResource(currentItem!!.path)
+            videoView.initVideoResource(currentItem!!.path)
             updateItem()
         } else {
             val bitmap = getImagePath(currentItem!!)
             if (bitmap == null) {
                 Log.d("${currentItem!!.path} bitmap is empty slide next(${playlist.size})")
                 playlist.removeAt(currentIndex)
-//                slideNext(true)
                 notifyDataChange()
             } else {
                 roll3dContainer.nextBitmap = bitmap
@@ -204,17 +200,22 @@ class StaticAdvertisement : AbsAdvertisement {
     }
 
     fun notifyDataChange(updateNow: Boolean = false) {
-        if (playlist.size == 1 /*|| roll3dContainer.currentBitmap == null*/) {
-            val item = playlist[0]
-            currentItem = item
-            roll3dContainer.currentBitmap = getImagePath(item)
-            if (currentItem!!.type == SlideAdapter.ItemType.Video) {
-                textureView.initVideoResource(currentItem!!.path)
-                updateItem()
-            }
-        } else if (playlist.size == 0) {
-            roll3dContainer.currentBitmap = BitmapFactory.decodeFile(defaultPath)
-        }
+        Log.d("updateNow=$updateNow")
+//        if (playlist.size == 1 /*|| roll3dContainer.currentBitmap == null*/) {
+//            val item = playlist[0]
+//            if (currentItem?.type == SlideAdapter.ItemType.Video) {
+//                roll3dContainer.show()
+//                videoView.stop()
+//            }
+//            currentItem = item
+//            roll3dContainer.currentBitmap = getImagePath(item)
+//            if (currentItem!!.type == SlideAdapter.ItemType.Video) {
+//                videoView.initVideoResource(currentItem!!.path)
+//                updateItem()
+//            }
+//        } else if (playlist.size == 0) {
+//            roll3dContainer.currentBitmap = BitmapFactory.decodeFile(defaultPath)
+//        }
         indicator.updateIndicator(playlist.size)
         if (updateNow) {
             slideNext(true)

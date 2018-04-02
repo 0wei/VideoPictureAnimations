@@ -22,6 +22,7 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.BandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
+import com.unistrong.luowei.kotlin.hide
 import java.io.File
 
 
@@ -43,7 +44,7 @@ class VideoView : TextureView {
     private val VIDEO_ALLOW_PLAY = BASE shl 3
     enum class ListenState{Start,End}
     var listener: ((state:ListenState) -> Unit?)? = null
-    private val DEBUG = true
+    private val DEBUG = false
 
 
     // 1. Create a default TrackSelector
@@ -203,7 +204,12 @@ class VideoView : TextureView {
         show()
         videoStatus = videoStatus or VIDEO_ALLOW_PLAY
         try2PlayVideo()
-
     }
+
+    fun stop(){
+        mediaPlayer.stop()
+        hide()
+    }
+
 
 }
