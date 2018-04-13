@@ -25,7 +25,7 @@ class StaticAdvertisement : AbsAdvertisement {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
 
-    private val DEBUG = true
+    private val DEBUG = false
     var timeOut = 3000
 
     var currentIndex = 0
