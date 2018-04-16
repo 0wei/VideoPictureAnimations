@@ -241,10 +241,17 @@ class StaticAdvertisement : AbsAdvertisement {
 
     fun next() {
         slideNext(true)
+        slideDelay()
     }
 
     fun prev() {
-        if (playlist.size > 0) currentIndex = (currentIndex - 2) % playlist.size
+        if (playlist.size > 0) {
+            currentIndex = (currentIndex - 2) % playlist.size
+            if (currentIndex < 0) {
+                currentIndex += playlist.size
+            }
+        }
         slideNext(true)
+        slideDelay()
     }
 }
