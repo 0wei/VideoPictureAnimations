@@ -23,10 +23,10 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <com.luowei.slide.CircleIndicator
-        android:id="@+id/circleIndicator"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+    <!--<com.luowei.slide.CircleIndicator-->
+        <!--android:id="@+id/circleIndicator"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"/>-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -43,15 +43,42 @@
             android:layout_height="wrap_content"
             android:max="100" />
 
-        <Button
-            android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:max="720" />
+
 
         <SeekBar
             android:id="@+id/cameraY"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="720" />
+
+        <Button
+            android:text="add"
+            android:id="@+id/add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:max="720" />
+        <Button
+            android:text="addvideo"
+            android:id="@+id/addvideo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:max="720" />
+        <Button
+            android:text="rm"
+            android:id="@+id/rm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:max="720" />
+        <Button
+            android:text="next"
+            android:id="@+id/next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:max="720" />
+        <Button
+            android:text="prev"
+            android:id="@+id/prev"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:max="720" />
     </LinearLayout>
