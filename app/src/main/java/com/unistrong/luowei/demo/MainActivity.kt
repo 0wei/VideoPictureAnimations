@@ -32,40 +32,23 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
-
-//        circleIndicator.updateIndicator(20)
-//        circleIndicator.onPageSelected(3)
-//        var index = 0
-//        button.setOnClickListener { circleIndicator.onPageSelected(index++ % 20) }
-
-        /* advertisement.setFragmentManager(supportFragmentManager)
-         advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/adv1.png"))
-         advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/adv2.png"))
-         advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/adv3.png"))
-         advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Video, "/sdcard/1.mp4"))*/
-//        advertisement.nextBitmap=  BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher)
-//        advertisement.currentBitmap = BitmapFactory.decodeResource(resources, R.mipmap.maxresdefault)
-
-//        advertisement.ImageViewA.currentBitmap = BitmapFactory.decodeResource(resources, R.mipmap.fdae)
-//        advertisement.ImageViewA.nextBitmap = BitmapFactory.decodeResource(resources, R.mipmap.maxresdefault)
-//        advertisement.ImageViewB.currentBitmap = BitmapFactory.decodeResource(resources, R.mipmap.maxresdefault)
-//        advertisement.ImageViewB.nextBitmap = BitmapFactory.decodeResource(resources, R.mipmap.fdae)
-//        advertisement.ImageViewC.currentBitmap = BitmapFactory.decodeResource(resources, R.mipmap.ddff)
-//        advertisement.ImageViewC.nextBitmap = BitmapFactory.decodeResource(resources, R.mipmap.maxresdefault)
-//        advertisement.currentBitmap = BitmapFactory.decodeFile("/sdcard/adv1.png")
         var count = 0
-        button.setOnClickListener {
-            //            advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Video, "/sdcard/ad/1.mp4"))
-            advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/2h/1.jpg"))
-//            advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Video, "/sdcard/1.mp4"))
-
-
+        add.setOnClickListener {
+            advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/abc/${count++ % 4}.jpg"))
+        }
+        addvideo.setOnClickListener {
+            advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Video, "/sdcard/1.mp4"))
         }
 
-//        (1..1042).map { "$it.jpg" }.forEach { advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/img18/$it")) }
-//        (1..2).map { "$it.jpg" }.forEach { advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/2h/$it")) }
+        rm.setOnClickListener {
+            advertisement.playlist.apply { removeAt(size - 1) }
+            advertisement.notifyDataChange()
+        }
+        advertisement.setDefaultImageFile("/sdcard/abc/0.jpg")
 
-        advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/ad/adv2.png"))
+        next.setOnClickListener { advertisement.next() }
+        prev.setOnClickListener { advertisement.prev() }
+//        advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/abc/1.jpg"))
 //        advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/ad/adv3.png"))
 //        advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/2h/1.jpg"))
 //        advertisement.addItem(SlideAdapter.Item(SlideAdapter.ItemType.Image, "/sdcard/2h/2.jpg"))

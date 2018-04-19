@@ -19,7 +19,7 @@ class CircleIndicator : LinearLayout {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
 
     private val textView = TextView(context)
-    private var count=0
+    private var count = 0
 
     init {
         orientation = HORIZONTAL
@@ -33,7 +33,7 @@ class CircleIndicator : LinearLayout {
     private val scale = .7f
     private val margin = 5
     fun updateIndicator(count: Int) {
-        if (count + childCount < 20) {
+        if (count < 20) {
             removeView(textView)
             if (childCount < count) {
                 for (i in 0 until count - childCount) {
@@ -59,7 +59,7 @@ class CircleIndicator : LinearLayout {
             removeAllViews()
             addView(textView)
         }
-        this.count=count
+        this.count = count
     }
 
     fun onPageSelected(currentIndex: Int) {
