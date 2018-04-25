@@ -35,15 +35,10 @@ class VideoView : TextureView {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
 
-    //    private var mediaPlayer: MediaPlayer? = null
-    private var videoStatus: Int = 0
-    private val BASE = 1
-//    private val VIDEO_DATA_LOADED = BASE
-    private val VIDEO_SURFACE_LOADED = BASE shl 1
-    private val VIDEO_ERROR = BASE shl 2
-    private val VIDEO_ALLOW_PLAY = BASE shl 3
-    enum class ListenState{Start,End}
-    var listener: ((state:ListenState) -> Unit?)? = null
+
+    enum class ListenState { Start, End }
+
+    var listener: ((state: ListenState) -> Unit?)? = null
     private val DEBUG = false
 
 
@@ -54,17 +49,11 @@ class VideoView : TextureView {
     val trackSelector = DefaultTrackSelector(videoTrackSelectionFactory)
     val mediaPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector)
 
-
     init {
-//        isDrawingCacheEnabled = true
-//        mediaPlayer = MediaPlayer()
+
         surfaceTextureListener = object : TextureView.SurfaceTextureListener {
             override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
                 mediaPlayer.setVideoSurface(Surface(surface))
-
-//                mediaPlayer?.setSurface(Surface(surface))
-                //                mediaPlayer.setDisplay(holder);
-                videoStatus = videoStatus or VIDEO_SURFACE_LOADED
                 try2PlayVideo()
             }
 
@@ -73,7 +62,7 @@ class VideoView : TextureView {
             }
 
             override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
-                videoStatus = videoStatus and VIDEO_SURFACE_LOADED.inv()
+//                videoStatus = videoStatus and VIDEO_SURFACE_LOADED.inv()
                 releaseMediaPlayer()
                 return true
             }
@@ -91,7 +80,7 @@ class VideoView : TextureView {
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 if (playbackState == Player.STATE_ENDED) {
                     playDone()
-                } else if(playbackState==Player.STATE_READY){
+                } else if (playbackState == Player.STATE_READY) {
                     listener?.invoke(ListenState.Start)
                 }
             }
@@ -123,90 +112,37 @@ class VideoView : TextureView {
         mediaPlayer.release()
     }
 
-    private fun try2PlayVideo(): Boolean {
-
-        if (//videoStatus and VIDEO_DATA_LOADED != 0 &&
-                 videoStatus and VIDEO_SURFACE_LOADED != 0
-                && videoStatus and VIDEO_ALLOW_PLAY != 0
-                && mediaPlayer != null
-//                && !mediaPlayer!!.pl
-        ) {
-//            val alpha = imageView.animate().alpha(0f)
-//            alpha.setListener(object : AnimatorListenerAdapter() {
-//                override fun onAnimationEnd(animation: Animator?) {
-//                    super.onAnimationEnd(animation)
-//                    imageView.visibility = View.INVISIBLE
-//                    imageView.alpha = 1f
-//                }
-//            })
-//            alpha.start()
-            if (DEBUG) Log.d()
-//            mediaPlayer!!.start()
-            mediaPlayer.playWhenReady = true;
-            mediaPlayer.seekTo(0);
-//            mediaPlayer!!.playWhenReady = true
-            return true
-        }
-        return false
+    private fun try2PlayVideo() {
+        mediaPlayer.playWhenReady = true;
+        mediaPlayer.seekTo(0);
     }
 
-    var playComplete: Boolean = false
-        private set
+/*    var playComplete: Boolean = false
+        private set*/
 
     fun initVideoResource(videoPath: String) {
-        playComplete = false
-        videoStatus = videoStatus and VIDEO_ALLOW_PLAY.inv()
         if (DEBUG) Log.d("path=$videoPath")
-
         val bandwidthMeter = DefaultBandwidthMeter()
-// Produces DataSource instances through which media data is loaded.
+        // Produces DataSource instances through which media data is loaded.
         val dataSourceFactory = DefaultDataSourceFactory(context,
                 Util.getUserAgent(context, "yourApplicationName"), bandwidthMeter)
-// This is the MediaSource representing the media to be played.
+        // This is the MediaSource representing the media to be played.
         val videoSource = ExtractorMediaSource.Factory(dataSourceFactory)
                 .createMediaSource(Uri.fromFile(File(videoPath)))
-// Prepare the player with the source.
+        // Prepare the player with the source.
         mediaPlayer.prepare(videoSource)
-//        mediaPlayer.playWhenReady = true
-//        try {
-//            mediaPlayer!!.reset()
-//            mediaPlayer!!.setDataSource(videoPath)
-//            mediaPlayer!!.setAudioStreamType(AudioManager.STREAM_MUSIC)
-//            mediaPlayer!!.prepareAsync()
-//            mediaPlayer!!.setOnPreparedListener {
-//                videoStatus = videoStatus or VIDEO_DATA_LOADED
-//                try2PlayVideo()
-//                if (DEBUG) Log.d("on prepared")
-//            }
-//            mediaPlayer!!.setOnCompletionListener {
-//                if (DEBUG) Log.d("completion")
-//                playDone()
-//            }
-//            mediaPlayer!!.setOnErrorListener { mp, what, extra ->
-//                playDone()
-//                if (DEBUG) Log.e("on error: mp=$mp, what=$what, extra=$extra")
-//                true
-//            }
-//        } catch (e: Exception) {
-//            e.printStackTrace();
-//            videoStatus = videoStatus or VIDEO_ERROR
-//            playDone()
-//        }
-
     }
 
     private fun playDone() {
         listener?.invoke(ListenState.End)
-        playComplete = true
     }
 
     fun play() {
         show()
-        videoStatus = videoStatus or VIDEO_ALLOW_PLAY
         try2PlayVideo()
     }
 
-    fun stop(){
+    fun stop() {
         mediaPlayer.stop()
         hide()
     }

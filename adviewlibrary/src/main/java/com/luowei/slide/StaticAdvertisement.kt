@@ -119,20 +119,6 @@ class StaticAdvertisement : AbsAdvertisement {
     private var currentItem: SlideAdapter.Item? = null
 
     private fun slideNext(force: Boolean = false) {
-//        if (playlist.size <= 1) {
-//            if (currentItem?.type == SlideAdapter.ItemType.Video) {
-//                updateItem()
-//            }
-//            if (!force) return
-//        }
-//        if (currentItem?.type == SlideAdapter.ItemType.Video) {
-//            if (DEBUG) Log.d("wait..")
-//            if (force) {
-//                roll3dContainer.show()
-//                videoView.stop()
-//            } else return
-//        }
-
         if (currentItem?.type == SlideAdapter.ItemType.Video && !force) return
         if (playlist.size > 0) currentIndex = (currentIndex + 1) % playlist.size
         val item = playlist.getOrNull(currentIndex) ?: defaultItem
@@ -166,14 +152,6 @@ class StaticAdvertisement : AbsAdvertisement {
             else -> item.videoImage
         }
         return try {
-//            Log.d("path=$path")
-//            val options = BitmapFactory.Options()
-//            options.inMutable = true
-//            options.inBitmap = bitmap
-//            BitmapFactory.decodeFile(path, options)
-//            Glide.with(this).asBitmap().load(path).submit().get()
-//            Glide.with(this)
-//            BitmapFactory.decodeFile(path)
             path ?: return null
             return BitmapLoader.loadBitmap(path, width, height)
         } catch (e: Exception) {
@@ -211,22 +189,6 @@ class StaticAdvertisement : AbsAdvertisement {
     fun notifyDataChange(updateNow: Boolean = false) {
         Log.d("updateNow=$updateNow")
         var update = updateNow
-//        if (playlist.size == 1 /*|| roll3dContainer.currentBitmap == null*/) {
-//            val item = playlist[0]
-//            if (currentItem?.type == SlideAdapter.ItemType.Video) {
-//                roll3dContainer.show()
-//                videoView.stop()
-//            }
-//            currentItem = item
-//            roll3dContainer.currentBitmap = getImagePath(item)
-//            if (currentItem!!.type == SlideAdapter.ItemType.Video) {
-//                videoView.initVideoResource(currentItem!!.path)
-//                updateItem()
-//            }
-//        } else if (playlist.size == 0) {
-//            roll3dContainer.currentBitmap = BitmapFactory.decodeFile(defaultItem)
-//        }
-
         if (currentItem != null) {
             if (playlist.find { it.path == currentItem!!.path } == null) {
                 update = true
