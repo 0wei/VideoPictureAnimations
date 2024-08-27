@@ -3,5 +3,5 @@
 
 Switching between video and image animations
 
-![](gif/show.gif) 
+![pic](gif/show.gif) 
 
